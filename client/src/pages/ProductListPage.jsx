@@ -1,0 +1,187 @@
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import AxiosToastError from "../utils/AxiosToastError";
+import SummaryApi from "../common/SummaryApi";
+import Axios from "../utils/Axios";
+import Loading from "../components/Loading";
+import CardProduct from "../components/CardProduct";
+import { useSelector } from "react-redux";
+import { valideURLConvert } from "../utils/validURLConverte";
+
+
+const ProductListPage = () => {
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [totalPage, setTotalPage] = useState(1);
+  const params = useParams();
+  const AllSubCategory = useSelector((state) => state.product.allsubCategory);
+  const [DisplaySubcategory, setDisplaySubcategory] = useState([]);
+  
+
+  const subCategoryParts = params?.subCategory?.split("-") || [];
+  const subcategoryName = subCategoryParts?.slice(0, -1)?.join(" ");
+
+  const categoryId = params?.category?.split("-").pop() || "";
+  const subcategoryId = subCategoryParts.at(-1) || "";
+
+  const fetchProductData = async () => {
+    try {
+      setLoading(true);
+      const response = await Axios({
+        ...SummaryApi.getProductByCategoryAndSubcategory,
+        data: {
+          categoryId: categoryId,
+          subcategoryId: subcategoryId,
+          page: page,
+          limit: 8,
+        },
+      });
+
+      const { data: responseData } = response;
+      if (responseData.success) {
+        if (responseData.page == 1) {
+          setData(responseData.data);
+        } else {
+          setData([...data, ...responseData.data]);
+        }
+
+        setTotalPage(responseData.totalPage || 1);
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProductData();
+  }, [params]);
+
+  useEffect(() => {
+    const sub = AllSubCategory.filter((s) => {
+      const filterData = s.category.some((el) => {
+        return el._id === categoryId;
+      });
+
+      return filterData ? filterData : null;
+    });
+    setDisplaySubcategory(sub);
+   
+  }, [params, AllSubCategory]);
+
+  return (
+<section className="bg-gray-50">
+  <div className="container mx-auto ">
+
+    {/* MAIN BOX */}
+    <div className="bg-white shadow-md  overflow-hidden">
+
+      {/* STICKY SUBCATEGORY HEADER */}
+      <div className="sticky top-0 z-30 bg-white border-b  border-b-gray-200 px-4 py-3">
+        <h3 className="font-semibold capitalize text-lg">
+          {subcategoryName || "Subcategory"}
+        </h3>
+      </div>
+
+      {/* CONTENT AREA */}
+      <div
+        className="
+          grid
+          grid-cols-[80px_1fr]
+          sm:grid-cols-[120px_1fr]
+          md:grid-cols-[180px_1fr]
+          lg:grid-cols-[220px_1fr]
+        "
+        style={{ height: "calc(100vh - 140px)" }} // header + subheader
+      >
+
+     {/* LEFT SIDEBAR (Scrollable & Reduced Height) */}
+<div className="border-r border-r-gray-200 bg-gray-50 h-full">
+  <div className="
+      h-[420px]              /* 👈 controls 4 items */
+      overflow-y-auto
+      p-3
+      grid gap-3
+      scrollbar-thin
+      scrollbar-thumb-gray-300
+      scrollbar-track-transparent
+    ">
+    {DisplaySubcategory.map((s) => {
+      const categorySlug = params.category;
+      const url = `/${categorySlug}/${valideURLConvert(s.name)}-${s._id}`;
+
+      return (
+        <Link
+          key={s._id}
+          to={url}
+          className={`
+            flex flex-col items-center gap-2
+            bg-white rounded-lg p-2
+            border transition
+            ${
+              subcategoryId === s._id
+                ? "border-green-500 bg-green-50"
+                : "border-transparent hover:bg-green-50"
+            }
+          `}
+        >
+          <div className="w-12 h-12">
+            <img
+              src={s.image}
+              alt={s.name}
+              className="w-full h-full object-contain"
+            />
+          </div>
+
+          <p className="text-[11px] font-medium text-center line-clamp-2">
+            {s.name}
+          </p>
+        </Link>
+      );
+    })}
+  </div>
+</div>
+
+
+        {/* RIGHT PRODUCT AREA (Scrollable) */}
+        <main className="h-full overflow-y-auto p-4">
+
+          {/* PRODUCT GRID */}
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-3
+              md:grid-cols-4
+              lg:grid-cols-5
+              gap-4
+              p-7
+            "
+          >
+            {data.map((p, index) => (
+              <CardProduct
+                key={p._id + "productSubCategory" + index}
+                data={p}
+              />
+            ))}
+          </div>
+
+          {/* LOADING */}
+          {loading && (
+            <div className="flex justify-center py-8">
+              <Loading />
+            </div>
+          )}
+        </main>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+  );
+};
+
+export default ProductListPage;
