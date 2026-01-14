@@ -3,8 +3,10 @@ import SummaryApi, { baseURL } from '../common/SummaryApi'
 
 const Axios= axios.create({
     baseURL:baseURL,
-    withCredentials:false
-    
+    withCredentials:true, // Enable credentials for cookies/auth
+    headers: {
+        'Content-Type': 'application/json',
+    }
 })
 // sending acess token in the header
 Axios.interceptors.request.use(
@@ -23,14 +25,13 @@ Axios.interceptors.request.use(
 
 // extend the life span  of acess token with the help refresh 
 
-Axios.interceptors.request.use(
+Axios.interceptors.response.use(
     (response)=>{
-
         return response
     },
     async(error)=>{
         let originalRequest=error.config
-        if(error.response.status==401 && !originalRequest.retry){
+        if(error.response?.status==401 && !originalRequest.retry){
             originalRequest.retry= true
             const refreshToken=localStorage.getItem('refreshtoken')
             

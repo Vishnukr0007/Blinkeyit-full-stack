@@ -49,11 +49,10 @@ const UploadSubCategory = ({close,fetchData}) => {
      } 
 
      const handleRemoveCategorySelected=(categoryId)=>{
-         const  index=subCategoryData.category.findIndex(el=>el._id===categoryId)
-         subCategoryData.category.splice(index,1)
          setSubCategoryData((preve)=>{
           return {
-            ...preve
+            ...preve,
+            category: preve.category.filter(el => el._id !== categoryId)
           }
          })
      }

@@ -71,9 +71,18 @@ export async function registerUserController(req,res){
 export async function verifyEmailcontroller(req,res){
     try{
        const {code} =req.body
+       
+       if (!code) {
+         return res.status(400).json({
+           message: "Verification code is required",
+           error: true,
+           success: false
+         })
+       }
+       
        const user=await UserModel.findOne({_id:code })
        if(!user){
-        return res.status(500).json({
+        return res.status(400).json({
             message:" Invalid code",
             error:true,
             success:false

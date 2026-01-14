@@ -36,9 +36,10 @@ export const addToCartItemController =async(req,res)=>{
 
         const save=await cartItem.save()
 
+        // NOTE: `shopping_cart` stores cartProduct IDs (not product IDs)
         const updateCartUser=await UserModel.updateOne({_id:userId},{
             $push:{
-                shopping_cart:productId
+                shopping_cart:save._id
             }
         })
 

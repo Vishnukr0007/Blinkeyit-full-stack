@@ -8,7 +8,7 @@ import SummaryApi from "../common/SummaryApi";
 import AxiosToastError from "../utils/AxiosToastError";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
+// Removed loadStripe import - no longer needed with direct URL redirect
 
 const CheckoutPage = () => {
   const {
@@ -60,37 +60,60 @@ const CheckoutPage = () => {
 
     const toastId = toast.loading("Redirecting to payment...");
 
-    const stripe = await loadStripe(
-      import.meta.env.VITE_STRIPE_PUBLIC_KEY
-    );
-
-    if (!stripe) {
-      toast.dismiss(toastId);
-      return toast.error("Stripe failed to load");
-    }
-
-    const response = await Axios.post(
-      SummaryApi.payment_url.url,
-      {
+    // Use Axios utility wrapper correctly
+    const response = await Axios({
+      ...SummaryApi.payment_url,
+      data: {
         list_items: cartItem,
         addressId: selectedAddress._id,
       },
-      {
-        withCredentials: true,
-      }
-    );
+    });
 
     toast.dismiss(toastId);
 
-    if (!response?.data?.id) {
-      return toast.error("Payment session not created");
+    // Check response structure - backend returns { success: true, id: session.id, url: session.url }
+    if (!response?.data?.success) {
+      const errorMsg = response?.data?.message || "Payment session not created";
+      return toast.error(errorMsg);
     }
 
-    await stripe.redirectToCheckout({
-      sessionId: response.data.id,
-    });
+    // Get checkout session URL from response
+    const checkoutUrl = response?.data?.url;
+    const sessionId = response?.data?.id;
+    
+    // Use URL directly (recommended) or fallback to sessionId
+    if (checkoutUrl) {
+      // Direct redirect using session URL (recommended method)
+      window.location.href = checkoutUrl;
+    } else if (sessionId) {
+      // Fallback: Use Stripe.js redirectToCheckout if URL not available
+      // Note: This requires loading Stripe.js
+      const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+      if (!stripePublicKey) {
+        return toast.error("Stripe configuration error");
+      }
+      
+      // Dynamically import Stripe.js only if needed
+      const { loadStripe } = await import("@stripe/stripe-js");
+      const stripe = await loadStripe(stripePublicKey);
+      
+      if (!stripe) {
+        return toast.error("Failed to load Stripe");
+      }
+      
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: sessionId,
+      });
+      
+      if (error) {
+        toast.error(error.message || "Failed to redirect to payment");
+      }
+    } else {
+      return toast.error("Payment session URL not received");
+    }
   } catch (error) {
     toast.dismiss();
+    console.error("Payment error:", error);
     AxiosToastError(error);
   }
 };

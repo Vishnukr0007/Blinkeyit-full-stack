@@ -14,7 +14,7 @@ export const createProductController=async(req,res)=>{
             description,
             more_details}=req.body
 
-            if(!name ||!image[0]||!category||!subcategory[0]||!unit || !price || !description){
+            if(!name || !image || !Array.isArray(image) || !image[0] || !category || !Array.isArray(category) || !category[0] || !subcategory || !Array.isArray(subcategory) || !subcategory[0] || !unit || !price || !description){
                 return res.status(400).json({
                     message:"Enter required fields",
                     error:true,

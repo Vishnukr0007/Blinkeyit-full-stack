@@ -51,8 +51,6 @@ const Login = () => {
         setData({ email: "", password: "" });
         navigate("/");
       }
-
-      console.log("response", response);
     } catch (error) {
       AxiosToastError(error);
     }

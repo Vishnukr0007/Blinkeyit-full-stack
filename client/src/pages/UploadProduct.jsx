@@ -63,27 +63,27 @@ const UploadProduct = () => {
 
   }
   const handleDeleteImage=async(index)=>{
-    data.image.splice(index,1)
     setData((preve)=>{
       return{
-        ...preve
+        ...preve,
+        image: preve.image.filter((_, i) => i !== index)
       }
     })
   }
 
   const handleRemoveCategory=async(index)=>{
-    data.category.splice(index,1)
     setData((preve)=>{
       return{
-        ...preve
+        ...preve,
+        category: preve.category.filter((_, i) => i !== index)
       }
     })
   }
   const handleRemoveSubCategory=async(index)=>{
-    data.subcategory.splice(index,1)
     setData((preve)=>{
       return{
-        ...preve
+        ...preve,
+        subcategory: preve.subcategory.filter((_, i) => i !== index)
       }
     })
   }
