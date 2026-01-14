@@ -7,13 +7,33 @@ if(!process.env.MONGODB_URI){
     )
 }
 
+// Cache connection for serverless environments
+let cachedConnection = null
+
 async function connectDB() {
+    // Return cached connection if available (serverless optimization)
+    if (cachedConnection) {
+        return cachedConnection
+    }
+
     try{
-        await mongoose.connect(process.env.MONGODB_URI)
-        console.log('connect DB')
+        const connection = await mongoose.connect(process.env.MONGODB_URI, {
+            // Optimize for serverless
+            maxPoolSize: 1, // Maintain only one connection per instance
+            serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+            socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+        })
+        console.log('✅ Connected to MongoDB')
+        cachedConnection = connection
+        return connection
     }catch(error){
-       console.log("Mongodb connect error",error)
-       process.exit(1)
+       console.error("❌ MongoDB connect error:", error)
+       // Don't exit in serverless - let the function handle the error
+       if (process.env.NODE_ENV === 'production') {
+           throw error
+       } else {
+           process.exit(1)
+       }
     }
 }
 

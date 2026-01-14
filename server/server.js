@@ -28,8 +28,8 @@ app.post(
 
 // Middleware
 app.use(cors({
-  credentials: true, // usually true for authentication
-  origin: process.env.FRONTEND_URL
+  credentials: true,
+  origin: process.env.FRONTEND_URL || "*"
 }))
 app.use(express.json());
 app.use(cookieParser())
@@ -48,13 +48,38 @@ app.use("/api/cart",cartRouter)
 app.use("/api/address",addressRouter)
 app.use("/api/order",orderRouter)
 
-// Start Server
-const PORT = process.env.PORT || 8080
-
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log('✅ Server is running on port', PORT)
-  })
-}).catch(err => {
-  console.error('❌ Failed to connect to DB:', err)
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Server is running' })
 })
+
+// Connect to database (optimized for serverless)
+// In serverless, connections are cached between invocations via connectDB()
+// Connect on first request (serverless-friendly)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB()
+    next()
+  } catch (error) {
+    console.error('❌ Failed to connect to DB:', error)
+    res.status(500).json({ 
+      message: 'Database connection failed', 
+      error: true 
+    })
+  }
+})
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 8080
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log('✅ Server is running on port', PORT)
+    })
+  }).catch(err => {
+    console.error('❌ Failed to connect to DB:', err)
+  })
+}
+
+// Export for Vercel serverless function
+export default app
