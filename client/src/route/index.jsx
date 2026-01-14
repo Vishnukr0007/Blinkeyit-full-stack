@@ -10,7 +10,7 @@ import ResetPassword from "../pages/ResetPassword";
 import UerMenuMobile from "../pages/UerMenuMobile";
 import Dashboard from "../layouts/Dashboard"
 import Profile from "../pages/Profile";
-import Myorders from "../pages/Myorders";
+import MyOrders from "../pages/MyOrders";
 import Addresses from "../pages/Addresses";
 import EGiftCards from "../pages/EGiftCards";
 import Fags from "../pages/Fags";
@@ -75,7 +75,7 @@ const router =createBrowserRouter([
               },
               {
                 path:"my-orders",
-                element:<Myorders/>
+                element:<MyOrders/>
               },
               {
                 path:"address",
