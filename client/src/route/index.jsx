@@ -16,7 +16,7 @@ import EGiftCards from "../pages/EGiftCards";
 import Fags from "../pages/Fags";
 import AccountPrivacy from "../pages/AccountPrivacy";
 import Category from "../pages/Category";
-import Subcategory from "../pages/Subcategory";
+import SubCategory from "../pages/SubCategory";
 import UploadProduct from "../pages/UploadProduct";
 import ProductsAdmin from "../pages/ProductsAdmin";
 import AdminPermission from "../layouts/AdminPermission";
@@ -99,7 +99,7 @@ const router =createBrowserRouter([
               },
               {
                 path:"subcategory",
-                element:<AdminPermission><Subcategory/></AdminPermission>
+                element:<AdminPermission><SubCategory/></AdminPermission>
               },
               {
                 path:"uploadproduct",
