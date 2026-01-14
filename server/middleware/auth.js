@@ -8,10 +8,10 @@ const auth=async(req,res,next)=>{
       }
         const decode = await jwt.verify(token,process.env.SECRET_KEY_ACCESS_TOKEN)
         if(!decode){
-            return response.status(401).json({
+            return res.status(401).json({
                 message:' unauthorized access',
                 error:true,
-                sucess:false
+                success:false
             })
         }
         req.userId=decode.id

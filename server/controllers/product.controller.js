@@ -16,7 +16,7 @@ export const createProductController=async(req,res)=>{
 
             if(!name ||!image[0]||!category||!subcategory[0]||!unit || !price || !description){
                 return res.status(400).json({
-                    mesaage:"Enter required fields",
+                    message:"Enter required fields",
                     error:true,
                     success:false
                 })
@@ -219,7 +219,7 @@ export const updateProductDetails=async(req,res)=>{
       return res.status(400).json({
         message:"provide product _id ",
         error:true,
-        succes:false
+        success:false
       })
     }
 

@@ -228,7 +228,7 @@ export const webhookStripe = async (req, res) => {
       );
 
       // ✅ CLEAR CART COLLECTION
-      const removeCartProductDB = await CartProductModel.deleteMany(userId);
+      const removeCartProductDB = await CartProductModel.deleteMany({ userId });
     }
 
     console.log("✅ Order saved, cart cleared, user updated");

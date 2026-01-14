@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 if(!process.env.MONGODB_URI){
     throw new Error(
-    "please provider MPNGODB_URI in the .env file"
+    "please provider MONGODB_URI in the .env file"
     )
 }
 

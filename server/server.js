@@ -49,7 +49,7 @@ app.use("/api/address",addressRouter)
 app.use("/api/order",orderRouter)
 
 // Start Server
-const PORT = process.env.PORT 
+const PORT = process.env.PORT || 8080
 
 connectDB().then(() => {
   app.listen(PORT, () => {

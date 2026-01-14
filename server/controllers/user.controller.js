@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import sendEmail from '../config/sendEmail.js'
 import UserModel from '../models/user.model.js'
-import bcrybtjs from 'bcryptjs'
+import bcryptjs from 'bcryptjs'
 import verifyEmailTemplate from '../utils/verifyEmailTemplate.js'
 import generateAcessToken from '../utils/generateAcessToken.js'
 import generateRefreshToken from '../utils/generateRefreshToken.js'
@@ -31,8 +31,8 @@ export async function registerUserController(req,res){
             })
         }
 
-      const salt=await bcrybtjs.genSalt(10)
-      const hashPassword=await bcrybtjs.hash(password,salt)
+      const salt=await bcryptjs.genSalt(10)
+      const hashPassword=await bcryptjs.hash(password,salt)
       const payload={
         name,
         email,
@@ -70,13 +70,13 @@ export async function registerUserController(req,res){
 // verify Email Controller
 export async function verifyEmailcontroller(req,res){
     try{
-       const code =req.body
+       const {code} =req.body
        const user=await UserModel.findOne({_id:code })
        if(!user){
         return res.status(500).json({
             message:" Invalid code",
             error:true,
-            succes:false
+            success:false
         })
        }
        const updateUser= await UserModel.updateOne({_id:code},{
@@ -85,7 +85,7 @@ export async function verifyEmailcontroller(req,res){
 
        return res.json({
         message:"verify email done",
-        succes:true,
+        success:true,
         error: false
 
        })
@@ -93,7 +93,7 @@ export async function verifyEmailcontroller(req,res){
         return res.status(500).json({
             message: error.message|| error,
             error: true,
-            success:true
+            success:false
         })
     }
 }
@@ -126,7 +126,7 @@ export async function loginController(req,res) {
                 success:false
             })
         }
-        const checkPassword=await bcrybtjs.compare(password,user.password)
+        const checkPassword=await bcryptjs.compare(password,user.password)
     if(!checkPassword){
         return res.status(400).json({
             message:"check the password",
@@ -195,7 +195,7 @@ export async function logoutController(req,res) {
         })
     } catch (error) {
         return res.status(500).json({
-            message: message.error|| error,
+            message: error.message|| error,
             error:true,
             success:false
         })
@@ -240,8 +240,8 @@ export async function updateUserDetails(req,res) {
         const {name,email,mobile,password}=req.body
         let hashPassword=''
         if(password){
-            const salt =await bcrybtjs.genSalt(10)
-            hashPassword=await bcrybtjs.hash(password,salt)
+            const salt =await bcryptjs.genSalt(10)
+            hashPassword=await bcryptjs.hash(password,salt)
         }
 
         const updateUser=await  UserModel.updateOne({_id:userId},{
@@ -263,7 +263,7 @@ export async function updateUserDetails(req,res) {
         return res.status(500).json({
             message:error.message|| error,
             error:true,
-            sucess:false
+            success:false
 
         })
         
@@ -398,7 +398,7 @@ export async function resetPassword(req,res) {
             return res.status(400).json({
                 message:"provided required fields email,newpassword,confirmPassword",
                 error:true,
-                sucess:false
+                success:false
             })
         }
 
@@ -418,8 +418,8 @@ export async function resetPassword(req,res) {
             success:false
         })
       } 
-       const salt= await bcrybtjs.genSalt(10)
-       const  hashPassword=await bcrybtjs.hash(newPassword,salt)
+       const salt= await bcryptjs.genSalt(10)
+       const  hashPassword=await bcryptjs.hash(newPassword,salt)
       const update=await UserModel.findByIdAndUpdate(user._id,{
            password:hashPassword
       })

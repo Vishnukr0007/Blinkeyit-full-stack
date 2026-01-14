@@ -78,8 +78,6 @@ function App() {
         // fetchCartItems()
          },[])
 
-         console.log()
-
   return (
     <GlobalProvider>
     <ScrollToTop/>
