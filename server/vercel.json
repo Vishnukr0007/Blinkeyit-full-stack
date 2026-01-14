@@ -1,9 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "",
-  "outputDirectory": "",
-  "installCommand": "npm install",
-  "framework": null,
   "builds": [
     {
       "src": "server.js",
@@ -15,12 +11,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "functions": {
-    "server.js": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 30,
-      "memory": 1024
-    }
-  }
+  ]
 }
