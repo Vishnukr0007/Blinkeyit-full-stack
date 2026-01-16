@@ -2,10 +2,10 @@ import React from 'react';
 
 const CardLoading = () => {
   return (
-    <div className='w-full sm:max-w-[180px] md:max-w-[220px] lg:min-w-44 h-[250px] md:h-[260px] lg:h-[280px] p-2 border grid md:gap-3 rounded animate-pulse bg-white shadow-sm'>
+    <div className='w-full min-h-[300px] md:min-h-[340px] p-4 border border-gray-100 flex flex-col gap-3 rounded-2xl animate-pulse bg-white shadow-sm'>
       
       {/* Image placeholder */}
-      <div className='h-24 sm:h-28 bg-blue-50 rounded'></div>
+      <div className='h-32 md:h-40 bg-gray-100 rounded-lg'></div>
 
       {/* Timer placeholder */}
       <div className='h-4 bg-blue-50 rounded w-20'></div>

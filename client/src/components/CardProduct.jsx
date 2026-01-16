@@ -18,8 +18,8 @@ const CardProduct = ({ data }) => {
       to={url}
       className="
     relative
-    w-full sm:max-w-[180px] md:max-w-[220px] lg:min-w-44
-    h-[270px] md:h-[290px]
+    w-full
+    min-h-[300px] md:min-h-[340px]
     p-4
     flex flex-col gap-3
     rounded-2xl
@@ -51,11 +51,11 @@ const CardProduct = ({ data }) => {
       )}
 
       {/* IMAGE */}
-      <div className="h-24 md:h-28 flex items-center justify-center">
+      <div className="h-32 md:h-40 flex items-center justify-center bg-gray-50/30 rounded-lg overflow-hidden">
         <img
           src={data.image?.[0] || "/placeholder.png"}
           alt={data.name}
-          className="max-h-full max-w-full object-contain transition-transform duration-300 hover:scale-105"
+          className="max-h-full w-full object-contain p-2 transition-transform duration-300 hover:scale-105"
         />
       </div>
 
