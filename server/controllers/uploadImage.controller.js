@@ -1,13 +1,14 @@
 import uploadImageCloudinary from "../utils/uploadimageCloudinary.js";
 
+
+
 const uploadImageController = async (req, res) => {
   try {
     const file = req.file;
-    console.log("Upload Request File:", file ? { ...file, buffer: file.buffer ? "Buffer Present" : "No Buffer" } : "No File");
 
     if (!file) {
       return res.status(400).json({
-        message: "No file uploaded",
+        message: "No file received",
         success: false,
       });
     }
@@ -21,14 +22,15 @@ const uploadImageController = async (req, res) => {
       error: false,
     });
   } catch (error) {
-    console.error("Cloudinary upload error:", JSON.stringify(error, null, 2));
+    console.error("❌ Cloudinary upload failed:", error);
 
     return res.status(500).json({
-      message: error.message || "Image upload failed",
-      error: true,
+      message: error.message,
       success: false,
+      error: true,
     });
   }
 };
+
 
 export default uploadImageController;
