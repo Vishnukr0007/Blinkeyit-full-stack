@@ -13,7 +13,7 @@ import Profile from "../pages/Profile";
 import MyOrders from "../pages/MyOrders";
 import Addresses from "../pages/Addresses";
 import EGiftCards from "../pages/EGiftCards";
-import Fags from "../pages/Fags";
+import Faqs from "../pages/Faqs";
 import AccountPrivacy from "../pages/AccountPrivacy";
 import Category from "../pages/Category";
 import SubCategory from "../pages/SubCategory";
@@ -87,7 +87,7 @@ const router =createBrowserRouter([
               },
               {
                 path:"faqs",
-                element:<Fags/>
+                element:<Faqs/>
               },
               {
                 path:"accountprivacy",
