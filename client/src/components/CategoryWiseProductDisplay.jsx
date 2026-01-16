@@ -95,12 +95,12 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
           >
             {loading
               ? loadingCardNumber.map((_, index) => (
-                  <div key={`loading-${index}`} className="w-44 sm:w-52 md:w-60 flex-shrink-0">
+                  <div key={`loading-${index}`} className="w-36 sm:w-44 md:w-52 flex-shrink-0">
                     <CardLoading  />
                   </div>
                 ))
               : data.map((product, index) => (
-                  <div key={product._id + "-product-" + index} className="w-44 sm:w-52 md:w-60 flex-shrink-0">
+                  <div key={product._id + "-product-" + index} className="w-36 sm:w-44 md:w-52 flex-shrink-0">
                      <CardProduct data={product} />
                   </div>
                 ))}

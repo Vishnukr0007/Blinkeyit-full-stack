@@ -19,9 +19,9 @@ const CardProduct = ({ data }) => {
       className="
     relative
     w-full
-    min-h-[300px] md:min-h-[340px]
-    p-4
-    flex flex-col gap-3
+    min-h-[260px] md:min-h-[320px]
+    p-3 md:p-4
+    flex flex-col gap-2 md:gap-3
     rounded-2xl
     bg-white
     border border-gray-100
@@ -39,9 +39,9 @@ const CardProduct = ({ data }) => {
           className="
       absolute top-2 left-2
       bg-green-600 text-white
-      text-[10px] md:text-xs
+      text-[9px] md:text-xs
       font-semibold
-      px-2 py-0.5
+      px-1.5 py-0.5
       rounded-full
       z-10
     "
@@ -49,9 +49,9 @@ const CardProduct = ({ data }) => {
           {data.discount}% OFF
         </span>
       )}
-
+ 
       {/* IMAGE */}
-      <div className="h-32 md:h-40 flex items-center justify-center bg-gray-50/30 rounded-lg overflow-hidden">
+      <div className="h-28 md:h-36 flex items-center justify-center bg-gray-50/30 rounded-xl overflow-hidden">
         <img
           src={data.image?.[0] || "/placeholder.png"}
           alt={data.name}
