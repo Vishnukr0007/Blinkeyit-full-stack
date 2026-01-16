@@ -45,7 +45,9 @@ app.use(
             callback(null, true);
         } else {
             console.error(`Blocked by CORS: ${origin}`);
-            callback(new Error("Not allowed by CORS"));
+            const error = new Error("Not allowed by CORS");
+            error.status = 403; // Correct status for CORS rejection
+            callback(error);
         }
     }
   })
@@ -79,6 +81,17 @@ app.get("/", (req, res) => {
 /* -------------------- HEALTH CHECK -------------------- */
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Server is running" });
+});
+
+/* -------------------- GLOBAL ERROR HANDLER -------------------- */
+app.use((err, req, res, next) => {
+  console.error("Global Error:", err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({
+    message: err.message || "Internal Server Error",
+    error: true,
+    success: false
+  });
 });
 
 /* -------------------- LOCAL DEV ONLY -------------------- */

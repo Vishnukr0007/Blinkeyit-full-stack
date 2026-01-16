@@ -16,11 +16,12 @@ export async function createGiftCard(req, res) {
       price,
       discount,
       isActive: isActive !== undefined ? isActive : true,
-      imageUrl: upload.url,
+      image: upload.url,
     });
     const saved = await newCard.save();
     return res.json({ message: 'Gift card created', success: true, error: false, data: saved });
   } catch (error) {
+    console.error("Gift Card Create Error:", error);
     return res.status(500).json({ message: error.message || error, error: true, success: false });
   }
 }
@@ -28,9 +29,11 @@ export async function createGiftCard(req, res) {
 // Public: get all gift cards
 export async function getAllGiftCards(req, res) {
   try {
+    console.log("Fetching gift cards...");
     const cards = await GiftCardModel.find({});
     return res.json({ message: 'Gift cards fetched', success: true, error: false, data: cards });
   } catch (error) {
+    console.error("Gift Card Fetch Error:", error);
     return res.status(500).json({ message: error.message || error, error: true, success: false });
   }
 }
@@ -42,7 +45,7 @@ export async function updateGiftCard(req, res) {
     const updateData = { ...req.body };
     if (req.file) {
       const upload = await uploadImageCloudinary(req.file);
-      updateData.imageUrl = upload.url;
+      updateData.image = upload.url;
     }
     const updated = await GiftCardModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!updated) {
@@ -50,6 +53,7 @@ export async function updateGiftCard(req, res) {
     }
     return res.json({ message: 'Gift card updated', success: true, error: false, data: updated });
   } catch (error) {
+    console.error("Gift Card Update Error:", error);
     return res.status(500).json({ message: error.message || error, error: true, success: false });
   }
 }
@@ -64,6 +68,7 @@ export async function deleteGiftCard(req, res) {
     }
     return res.json({ message: 'Gift card deleted', success: true, error: false });
   } catch (error) {
+    console.error("Gift Card Delete Error:", error);
     return res.status(500).json({ message: error.message || error, error: true, success: false });
   }
 }
