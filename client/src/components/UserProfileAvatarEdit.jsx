@@ -27,7 +27,10 @@ const UserProfileAvatarEdit = ({close}) => {
       const response =await Axios({
 
         ...SummaryApi.uploadAvatar,
-        data:formData
+        data:formData,
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
   
       })
       const {data : responseData}=response 
