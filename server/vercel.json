@@ -11,12 +11,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "functions": {
-    "api/order/webhook.js": {
-      "bodyParser": false
-    }
-  }
- 
-
+  ]
 }
