@@ -1,6 +1,6 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -17,7 +17,7 @@ import orderRouter from "./route/order.route.js";
 import { webhookStripe } from "./controllers/order.controller.js";
 import bodyParser from "body-parser";
 
-dotenv.config();
+
 
 const app = express();
 
