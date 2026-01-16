@@ -114,10 +114,14 @@ const decreaseQty = (e) => {
         rounded-full
         hover:bg-green-50
         active:scale-95
-        transition
+        transition-all
+        duration-200
+        ease-out
         cursor-pointer
         flex items-center justify-center gap-1
-        hover-bounce
+        group
+        hover:scale-105
+        hover:shadow-md
       "
             onClick={handleAddToCart}
           >

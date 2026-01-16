@@ -68,7 +68,7 @@ body {
   animation: fadeIn 0.25s ease-out;
 }
 
-@keyframes bounceUpAndDown {
+@keyframes blinkit-bounce {
 
   0%,
   100% {
@@ -76,10 +76,10 @@ body {
   }
 
   50% {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
   }
 }
 
-.hover-bounce:hover .animate-bounce-icon {
-  animation: bounceUpAndDown 0.6s infinite ease-in-out;
+.group:hover .animate-bounce-icon {
+  animation: blinkit-bounce 0.4s ease-out infinite;
 }
