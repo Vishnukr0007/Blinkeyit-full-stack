@@ -30,7 +30,7 @@ const Home = () => {
   return (
     <div>
       {/* Banner section */}
-      <div className=" container mx-auto   my-2 px-3 ">
+      <div className=" container mx-auto my-4 px-4 sm:px-6 lg:px-8 ">
         <div className={`w-full h-full min-h-50  bg-slate-100 rounded-2xl ${!banner && "animate-pulse"} `}>
           <img
             src={banner}
@@ -50,7 +50,7 @@ const Home = () => {
 
       </div>
        {/* Category display section */}
-      <div className=" container mx-auto px-4 my-2 grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-2">
+      <div className=" container mx-auto px-4 sm:px-6 lg:px-8 my-6 md:my-10 grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-3 md:gap-4">
         {
           loadingCategory ? (
             new Array(12).fill(null).map((c,index)=>{

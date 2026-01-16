@@ -70,9 +70,9 @@ const ProductDisplaypage = () => {
   };
    console.log(data)
   return (
-    <section className="container mx-auto ">
-      <div className="bg-white rounded-lg ">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 p-4">
+    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_auto_1fr] gap-8 md:gap-12 p-4 md:p-8">
           {/* LEFT: IMAGE SECTION */}
           <div className="flex flex-col">
             {/* Main Image */}
@@ -207,7 +207,7 @@ const ProductDisplaypage = () => {
           <div className="hidden lg:block w-px bg-gray-200"></div>
 
           {/* RIGHT: PRODUCT DETAILS */}
-          <div className="flex flex-col gap-4 h-full mt-10  ">
+          <div className="flex flex-col gap-6 h-full mt-4 lg:mt-0">
             {/* Top Content */}
             <div className="flex flex-col gap-4">
               <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">

@@ -41,7 +41,7 @@ const Header = () => {
     <header className="sticky top-0 z-40 bg-white shadow-sm">
       {/* ================= DESKTOP HEADER ================= */}
       {!isMobile && (
-        <div className="container mx-auto flex items-center h-20 px-6">
+        <div className="container mx-auto flex items-center h-20 px-4 sm:px-6 lg:px-8">
           <Link to="/">
             <img src={newlogo} className="w-[160px]" alt="logo" />
           </Link>
@@ -112,10 +112,9 @@ const Header = () => {
         </div>
       )}
 
-      {/* ================= MOBILE HEADER ================= */}
       {isMobile && !isSearchPage && (
         <>
-          <div className="flex items-center justify-between px-4 h-16">
+          <div className="flex items-center justify-between px-4 sm:px-6 h-16">
             <Link to="/">
               <img src={newlogo} className="w-[100px]" alt="logo" />
             </Link>
@@ -132,9 +131,8 @@ const Header = () => {
         </>
       )}
 
-      {/* ================= MOBILE SEARCH PAGE ================= */}
       {isMobile && isSearchPage && (
-        <div className="px-4 py-2">
+        <div className="px-4 sm:px-6 py-2">
           <Search />
         </div>
       )}

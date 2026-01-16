@@ -3,8 +3,8 @@ import { FaSquareThreads } from "react-icons/fa6";
 
 const Footer = () => {
   return (
-    <footer className=" text-gray-600 text-sm">
-      <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+    <footer className="bg-white border-t border-gray-100 text-gray-600 text-sm">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center gap-6">
         
         {/* Left Section - Legal & Company Info */}
         <div className="text-center md:text-left mb-4 md:mb-0">
@@ -13,18 +13,18 @@ const Footer = () => {
         </div>
 
         {/* Right Section - Social Icons */}
-        <div className="flex space-x-8 ">
-          <a href="#"   className="hover:text-green-600 transition">
-            <FaFacebook size={40}   />
+        <div className="flex items-center gap-6 text-gray-400">
+          <a href="#" className="hover:text-green-600 transition-colors">
+            <FaFacebook size={24}   />
           </a>
-          <a href="#" className="hover:text-green-600 transition">
-            <FaTwitter size={40} />
+          <a href="#" className="hover:text-green-600 transition-colors">
+            <FaTwitter size={24} />
           </a>
-          <a href="#" className="hover:text-green-600 transition">
-            <FaInstagram size={40} />
+          <a href="#" className="hover:text-green-600 transition-colors">
+            <FaInstagram size={24} />
           </a>
-          <a href="#" className="hover:text-green-600 transition">
-            <FaSquareThreads size={40} />
+          <a href="#" className="hover:text-green-600 transition-colors">
+            <FaSquareThreads size={24} />
           </a>
         </div>
         

@@ -20,14 +20,16 @@ const CardProduct = ({ data }) => {
     relative
     w-full sm:max-w-[180px] md:max-w-[220px] lg:min-w-44
     h-[270px] md:h-[290px]
-    p-3
-    flex flex-col gap-2
-    rounded-xl
+    p-4
+    flex flex-col gap-3
+    rounded-2xl
     bg-white
     border border-gray-100
     shadow-sm
-    hover:shadow-md
-    transition
+    hover:shadow-lg
+    hover:border-green-100
+    transition-all
+    duration-300
     cursor-pointer
   "
     >
@@ -74,7 +76,7 @@ const CardProduct = ({ data }) => {
       </span>
 
       {/* PRICE + ADD */}
-      <div className="mt-auto flex items-center justify-between gap-10">
+      <div className="mt-auto flex items-center justify-between gap-3">
         {/* PRICE BLOCK */}
         <div className="flex flex-col">
           <span className="text-sm md:text-md font-bold text-gray-900 leading-none">
