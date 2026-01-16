@@ -34,7 +34,20 @@ app.post(
 app.use(
   cors({
     credentials: true,
-    origin: process.env.FRONTEND_URL || "*",
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            process.env.FRONTEND_URL, 
+            "https://blinkeyit-full-stack-sooty.vercel.app", 
+            "https://blinkeyit-full-stacknew.vercel.app"
+        ].filter(Boolean); // Remove undefined values
+
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.error(`Blocked by CORS: ${origin}`);
+            callback(new Error("Not allowed by CORS"));
+        }
+    }
   })
 );
 
