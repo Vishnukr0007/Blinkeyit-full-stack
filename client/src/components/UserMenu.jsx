@@ -14,7 +14,8 @@ const UserMenu = ({closeMenu}) => {
      
     const dispatch=useDispatch()
     const navigate=useNavigate()
-    const handleLogout= async()=>{
+    const handleLogout= async(e)=>{
+        if(e && e.preventDefault) e.preventDefault();
         try {
             const response=await Axios({
                ...SummaryApi.logout 
@@ -25,7 +26,9 @@ const UserMenu = ({closeMenu}) => {
             toast.success(response.data.message)
             navigate("/")
 
-            closeMenu()
+            if(typeof closeMenu === 'function'){
+               closeMenu()
+            }
             
             }
         } catch (error) {
@@ -35,12 +38,9 @@ const UserMenu = ({closeMenu}) => {
     }
 
     const handleClose=()=>{
-      if(close){
+      if(typeof closeMenu === 'function'){
           closeMenu()
-            
       }
-        
-      
     }
 
 
@@ -97,7 +97,7 @@ const UserMenu = ({closeMenu}) => {
         }
         <Link onClick={handleClose} to={"/dashboard/faqs"} className='hover:bg-gray-100   py-1'>FAQs</Link>
         <Link onClick={handleClose} to={"/dashboard/accountprivacy"} className='hover:bg-gray-100   py-1'>Account Privacy</Link>
-        <button onClick={handleLogout } className='text-left  cursor-pointer hover:bg-gray-100   py-1'> Log Out</button>
+        <button onClick={handleLogout} className='text-left  cursor-pointer hover:bg-gray-100   py-1'> Log Out</button>
       </div>
     </div>
   )
