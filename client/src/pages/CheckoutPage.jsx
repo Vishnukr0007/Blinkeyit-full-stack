@@ -74,6 +74,7 @@ const CheckoutPage = () => {
     // Check response structure - backend returns { success: true, id: session.id, url: session.url }
     if (!response?.data?.success) {
       const errorMsg = response?.data?.message || "Payment session not created";
+      console.error("Payment session creation failed:", response.data);
       return toast.error(errorMsg);
     }
 

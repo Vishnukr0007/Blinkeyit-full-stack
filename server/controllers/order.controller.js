@@ -114,19 +114,23 @@ export const paymentController = async (req, res) => {
       const finalPrice =
         priceWithDiscount(product.price, product.discount) * 100;
 
-      // Ensure images is always an array for Stripe
-      const productImages = Array.isArray(product.image) 
-        ? product.image 
-        : product.image 
-          ? [product.image] 
-          : [];
+      // Ensure images is always an array of FULL URLs for Stripe
+      let productImages = [];
+      if (Array.isArray(product.image)) {
+        productImages = product.image.filter(img => img && typeof img === 'string');
+      } else if (product.image && typeof product.image === 'string') {
+        productImages = [product.image];
+      }
+      
+      // Stripe requires at least one image or no image key (empty array is fine? docs say yes but sometimes strict)
+      // Best to ensure they are valid URLs. If no image, maybe provide a placeholder or leave empty.
 
       line_items.push({
         price_data: {
           currency: "inr",
           product_data: {
             name: product.name,
-            images: productImages, // Must be array
+            images: productImages.length > 0 ? productImages : [], 
             metadata: {
               productId: product._id.toString(),
             },
@@ -143,9 +147,13 @@ export const paymentController = async (req, res) => {
 
     const session = await Stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card", "upi"], // Added UPI for India
+      payment_method_types: ["card"], // 'upi' removed as it was rejected by Stripe
       customer_email: user.email,
 
+      metadata: {
+        userId: userId.toString(),
+        addressId: addressId.toString(),
+      },
       payment_intent_data: {
         metadata: {
           userId: userId.toString(),

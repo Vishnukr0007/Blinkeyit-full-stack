@@ -1,22 +1,25 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-body{
-    font-family: "Poppins",sans-serif;
-    font-weight: 100;
-    font-style: normal;
-    @apply  text-neutral-600
+@import "tailwindcss";
+
+body {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  @apply text-neutral-800 overflow-x-hidden;
 }
 
 
-    .scrollbar-auto::-webkit-scrollbar {
-      display: none;             /* Chrome, Safari */
-    }
-  
+.scrollbar-auto::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari */
+}
+
 
 @keyframes slideUp {
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -26,6 +29,7 @@ body{
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -41,9 +45,9 @@ body{
 
 /* global.css */
 .input {
-  @apply w-full mt-1 px-3 py-2 border rounded-lg text-sm
-         focus:outline-none focus:ring-1 focus:ring-green-600;
+  @apply w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-green-600;
 }
+
 .error {
   @apply text-xs text-red-500 mt-1;
 }
@@ -53,6 +57,7 @@ body{
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -62,4 +67,3 @@ body{
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-out;
 }
-
