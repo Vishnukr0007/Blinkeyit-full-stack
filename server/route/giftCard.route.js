@@ -10,8 +10,8 @@ const router = Router();
 router.get('/', getAllGiftCards);
 
 // Admin protected routes
-router.post('/', auth, admin, upload.single('image'), createGiftCard);
-router.put('/:id', auth, admin, upload.single('image'), updateGiftCard);
+router.post('/', auth, admin, createGiftCard);
+router.put('/:id', auth, admin, updateGiftCard);
 router.delete('/:id', auth, admin, deleteGiftCard);
 
 export default router;

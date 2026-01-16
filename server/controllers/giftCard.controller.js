@@ -1,23 +1,23 @@
 import GiftCardModel from '../models/giftCard.model.js';
-import uploadImageCloudinary from '../utils/uploadimageCloudinary.js';
 
 // Create a new gift card (admin only)
 export async function createGiftCard(req, res) {
   try {
-    const { name, description, price, discount, isActive } = req.body;
-    const imageFile = req.file; // multer middleware
-    if (!imageFile) {
-      return res.status(400).json({ message: 'Image file is required', error: true, success: false });
+    const { name, description, price, discount, isActive, image } = req.body;
+    
+    if (!image) {
+      return res.status(400).json({ message: 'Image URL is required', error: true, success: false });
     }
-    const upload = await uploadImageCloudinary(imageFile);
+
     const newCard = new GiftCardModel({
       name,
       description,
       price,
       discount,
       isActive: isActive !== undefined ? isActive : true,
-      image: upload.url,
+      image,
     });
+
     const saved = await newCard.save();
     return res.json({ message: 'Gift card created', success: true, error: false, data: saved });
   } catch (error) {
@@ -43,10 +43,9 @@ export async function updateGiftCard(req, res) {
   try {
     const { id } = req.params;
     const updateData = { ...req.body };
-    if (req.file) {
-      const upload = await uploadImageCloudinary(req.file);
-      updateData.image = upload.url;
-    }
+    
+    // No longer handling file uploads here as frontend sends URL in body
+    
     const updated = await GiftCardModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!updated) {
       return res.status(404).json({ message: 'Gift card not found', error: true, success: false });
