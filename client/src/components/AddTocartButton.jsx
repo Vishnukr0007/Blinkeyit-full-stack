@@ -94,21 +94,21 @@ const decreaseQty = (e) => {
 
 
   return (
-    <div className="w-full max-w-[150px]">
+    <div className="w-fit">
       {isAvailableCart ? (
-        <div  className=" flex bg-green-700 hover:bg-green-600 rounded-full  justify-between p-1 px-2 gap-1">
-          <button onClick={decreaseQty}className=" text-white cursor-pointer"><FiMinus size={15}/></button>
-          <p className="text-white text-sm ">{qty}</p>
-          <button onClick={increaseQty}className="text-white cursor-pointer"><FiPlus size={15}/></button>
+        <div  className=" flex bg-green-700 hover:bg-green-600 rounded-full items-center justify-between p-1 px-2 gap-3">
+          <button onClick={decreaseQty}className=" text-white cursor-pointer"><FiMinus size={13}/></button>
+          <p className="text-white text-sm font-semibold">{qty}</p>
+          <button onClick={increaseQty}className="text-white cursor-pointer"><FiPlus size={13}/></button>
         </div>
       ) : (
-        <div>
+        <div className="flex justify-end">
           {/* ADD BUTTON */}
           <button
             className="
-        px-4 py-1.5
+        px-6 py-1.5
         text-[11px] md:text-xs
-        font-semibold
+        font-bold
         text-green-600
         border border-green-600
         rounded-full
@@ -116,10 +116,11 @@ const decreaseQty = (e) => {
         active:scale-95
         transition
         cursor-pointer
+        bg-white
       "
             onClick={handleAddToCart}
           >
-            {loading ? <ButtonLoader /> : " ADD" } 
+            {loading ? <ButtonLoader /> : "ADD" } 
           </button>
         </div>
       )}
