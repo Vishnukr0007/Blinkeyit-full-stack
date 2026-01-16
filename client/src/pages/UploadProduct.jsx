@@ -51,14 +51,25 @@ const UploadProduct = () => {
     setImageLoding(true)
    const response=await UploadImage(file) 
    const {data:ImageResponse}=response
-   const imageUrl=ImageResponse.data.url 
-
-   setData((preve)=>{
-    return{
-      ...preve,
-      image:[...preve.image,imageUrl]
-    }
-   })
+   
+   if(ImageResponse.success){
+       const imageUrl=ImageResponse.data.url 
+       setData((preve)=>{
+        return{
+          ...preve,
+          image:[...preve.image,imageUrl]
+        }
+       })
+   } else {
+       // Assuming toast is imported or available via AxiosToastError, 
+       // but AxiosToastError takes an error object. 
+       // Let's check imports. toast is NOT imported in this file?
+       // It imports AxiosToastError.
+       // The original code didn't handle errors here.
+       // I'll leave error handling simple for now to just stop the crash.
+       console.error("Upload failed", ImageResponse);
+   }
+   
    setImageLoding(false)
 
   }

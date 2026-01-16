@@ -52,14 +52,20 @@ const EditProductAdmin = ({close,data:propsData,fetchProductData}) => {
     setImageLoding(true);
     const response = await UploadImage(file);
     const { data: ImageResponse } = response;
-    const imageUrl = ImageResponse.data.url;
+    
+    if(ImageResponse.success){
+        const imageUrl = ImageResponse.data.url;
 
-    setData((preve) => {
-      return {
-        ...preve,
-        image: [...preve.image, imageUrl],
-      };
-    });
+        setData((preve) => {
+        return {
+            ...preve,
+            image: [...preve.image, imageUrl],
+        };
+        });
+    } else {
+        console.error("Upload failed", ImageResponse);
+    }
+    
     setImageLoding(false);
   };
   const handleDeleteImage = async (index) => {
