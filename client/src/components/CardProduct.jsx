@@ -107,7 +107,7 @@ const CardProduct = ({ data }) => {
             Out of Stock
           </div>
         ) : (
-          <div className="flex justify-end w-full max-w-[80px] md:max-w-[100px]">
+          <div className="flex gap-4 justify-end w-full max-w-[80px] md:max-w-[100px]">
              <AddTocartButton data={data} />
           </div>
         )}
