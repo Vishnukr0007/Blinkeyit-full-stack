@@ -288,7 +288,7 @@ export const webhookStripe = async (req, res) => {
     );
 
     // ✅ Clear cart collection (ObjectId match)
-    await CartProductModel.deleteMany({userId});
+    await CartProductModel.deleteMany({ userId: userObjectId });
 
     console.log("✅ Order saved & cart cleared");
     return res.status(200).json({ received: true, processed: true });
