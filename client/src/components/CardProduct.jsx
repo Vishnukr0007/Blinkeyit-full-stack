@@ -19,7 +19,7 @@ const CardProduct = ({ data }) => {
       className="
     relative
     w-full
-    min-h-[260px] md:min-h-[320px]
+    min-h-[280px] md:min-h-[350px]
     p-3 md:p-4
     flex flex-col gap-2 md:gap-3
     rounded-2xl
@@ -76,9 +76,9 @@ const CardProduct = ({ data }) => {
       </span>
 
       {/* PRICE + ADD */}
-      <div className="mt-auto flex items-center justify-between gap-3">
+      <div className="mt-auto flex items-center justify-between gap-2">
         {/* PRICE BLOCK */}
-        <div className="flex flex-col">
+        <div className="flex flex-col justify-end">
           <span className="text-sm md:text-md font-bold text-gray-900 leading-none">
             {DisplayPriceInRupees(priceWithDiscount(data.price, data.discount))}
           </span>
@@ -107,9 +107,9 @@ const CardProduct = ({ data }) => {
             Out of Stock
           </div>
         ) : (
-          <>
-       <AddTocartButton data={data} />
-          </>
+          <div className="flex justify-end w-full max-w-[80px] md:max-w-[100px]">
+             <AddTocartButton data={data} />
+          </div>
         )}
       </div>
     </Link>

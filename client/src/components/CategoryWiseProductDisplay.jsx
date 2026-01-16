@@ -100,7 +100,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
                   </div>
                 ))
               : data.map((product, index) => (
-                  <div key={product._id + "-product-" + index} className="w-36 sm:w-44 md:w-52 flex-shrink-0">
+                  <div key={product._id + "-product-" + index} className="w-36 sm:w-44 md:w-52 flex-shrink-0 py-2">
                      <CardProduct data={product} />
                   </div>
                 ))}
