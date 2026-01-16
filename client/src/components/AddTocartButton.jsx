@@ -114,23 +114,12 @@ const decreaseQty = (e) => {
         rounded-full
         hover:bg-green-50
         active:scale-95
-        transition-all
-        duration-200
-        ease-out
+        transition
         cursor-pointer
-        flex items-center justify-center gap-1
-        group
-        hover:scale-105
-        hover:shadow-md
       "
             onClick={handleAddToCart}
           >
-            {loading ? <ButtonLoader /> : (
-              <>
-                <FiPlus className="animate-bounce-icon" /> 
-                ADD
-              </>
-            )} 
+            {loading ? <ButtonLoader /> : " ADD" } 
           </button>
         </div>
       )}
