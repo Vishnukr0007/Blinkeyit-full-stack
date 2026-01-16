@@ -163,7 +163,7 @@ export const paymentController = async (req, res) => {
 
       line_items,
 
-      success_url: `${process.env.FRONTEND_URL}/success`,
+      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL}/cancel`,
     });
 
@@ -317,6 +317,82 @@ export const getOrderDetailsController = async (req, res) => {
       message: error.message || "Failed to fetch orders",
       error: true,
       success: false,
+    });
+  }
+};
+
+/* ================= VERIFY PAYMENT CONTROLLER ================= */
+export const verifyPaymentController = async (req, res) => {
+  try {
+    const { session_id } = req.query; // Changed to query param
+    const userId = req.userId;
+
+    if (!session_id) {
+      return res.status(400).json({ message: "Session ID missing", success: false });
+    }
+
+    const session = await Stripe.checkout.sessions.retrieve(session_id);
+
+    if (session.payment_status !== "paid") {
+      return res.status(400).json({ message: "Payment not completed", success: false });
+    }
+
+    const orderId = session.id;
+
+    // Check if order exists
+    const existingOrder = await OrderModel.findOne({ orderId });
+
+    if (existingOrder) {
+      return res.status(200).json({ 
+        message: "Order already verified", 
+        success: true 
+      });
+    }
+
+    // Capture User/Address from metadata
+    // Fallback to current authenticated user if metadata missing (unlikely but safe)
+    const sessionUserId = session.metadata?.userId || userId;
+    const addressId = session.metadata?.addressId;
+
+    if(!addressId){
+        return res.status(400).json({message: "Address ID missing in session", success: false});
+    }
+
+    const userObjectId = new mongoose.Types.ObjectId(sessionUserId);
+
+    const line_items = await Stripe.checkout.sessions.listLineItems(session_id);
+
+    const orderProducts = await getOrderProductItems(
+      line_items,
+      session,
+      sessionUserId,
+      addressId
+    );
+
+    const orders = await OrderModel.insertMany(orderProducts);
+    const orderIds = orders.map((o) => o._id);
+
+    await UserModel.updateOne(
+      { _id: userObjectId },
+      {
+        $set: { shopping_cart: [] },
+        $push: { orderHistory: { $each: orderIds } },
+      }
+    );
+
+    await CartProductModel.deleteMany({ userId: userObjectId });
+
+    return res.status(200).json({
+      message: "Order verified and saved successfully",
+      success: true,
+    });
+
+  } catch (error) {
+    console.error("Verify Payment Error:", error);
+    return res.status(500).json({
+      message: error.message || "Verification failed",
+      success: false,
+      error: true,
     });
   }
 };

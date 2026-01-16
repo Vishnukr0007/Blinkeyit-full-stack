@@ -154,6 +154,10 @@ const SummaryApi={
         url:"/api/order/checkout",
         method:"post"
     },
+    payment_url_verify:{
+        url:"/api/order/verify-payment",
+        method:"post"
+    },
     getOrderItems:{
         url: "/api/order/order-list",
         method:"get"
