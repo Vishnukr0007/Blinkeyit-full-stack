@@ -82,31 +82,41 @@ const Header = () => {
             )}
 
             {/* CART BUTTON */}
-            <button
-              onClick={handleCartClick}
-              disabled={!isLoggedIn}
-              className={`flex items-center gap-3 px-4 py-4 rounded-md transition   h-[52px] 
-                ${
-                  isLoggedIn
-                    ? "bg-green-700 text-white hover:bg-green-800 cursor-pointer"
-                    : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                }`}
-            >
-              <BsCart3 size={20} />
+<button
+  onClick={handleCartClick}
+  disabled={!isLoggedIn}
+  className={`group flex items-center gap-3 px-4 py-4 rounded-md h-[52px]
+    transition-all
+    ${
+      isLoggedIn
+        ? "bg-green-700 text-white hover:bg-green-800 cursor-pointer"
+        : "bg-gray-300 text-gray-600 cursor-not-allowed"
+    }`}
+>
+  {/* CART ICON */}
+  <span
+    className={`
+      transition-transform duration-200 ease-out
+      group-hover:-translate-y-1
+    `}
+  >
+    <BsCart3 size={20} />
+  </span>
 
-              <div className="text-left text-sm leading-tight">
-                {totalQty > 0 ? (
-                  <>
-                    <p className="font-semibold">{totalQty} Items</p>
-                    <p className="text-xs opacity-90">
-                      {DisplayPriceInRupees(totalPrice)}
-                    </p>
-                  </>
-                ) : (
-                  <p className="font-semibold">My Cart</p>
-                )}
-              </div>
-            </button>
+  <div className="text-left text-sm leading-tight">
+    {totalQty > 0 ? (
+      <>
+        <p className="font-semibold">{totalQty} Items</p>
+        <p className="text-xs opacity-90">
+          {DisplayPriceInRupees(totalPrice)}
+        </p>
+      </>
+    ) : (
+      <p className="font-semibold">My Cart</p>
+    )}
+  </div>
+</button>
+
           </div>
         </div>
       )}
