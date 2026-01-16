@@ -90,7 +90,11 @@ const UserMenu = ({closeMenu}) => {
       
         <Link onClick={handleClose} to={"/dashboard/my-orders"} className='hover:bg-gray-100  py-1'>My Orders</Link>
         <Link onClick={handleClose} to={"/dashboard/address"} className='hover:bg-gray-100   py-1'>Save Address</Link>
-        <Link onClick={handleClose} to={"/dashboard/e-gift-cards"} className='hover:bg-gray-100   py-1'>E-Gift Cards</Link>
+        {
+          !isAdmin(user.role) && (
+            <Link onClick={handleClose} to={"/dashboard/e-gift-cards"} className='hover:bg-gray-100   py-1'>E-Gift Cards</Link>
+          )
+        }
         <Link onClick={handleClose} to={"/dashboard/faqs"} className='hover:bg-gray-100   py-1'>FAQs</Link>
         <Link onClick={handleClose} to={"/dashboard/accountprivacy"} className='hover:bg-gray-100   py-1'>Account Privacy</Link>
         <button onClick={handleLogout } className='text-left  cursor-pointer hover:bg-gray-100   py-1'> Log Out</button>
