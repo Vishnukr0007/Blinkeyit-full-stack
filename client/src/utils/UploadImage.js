@@ -11,8 +11,7 @@ const uploadImage=async(image)=>{
 
         return response
     } catch (error) {
-        return error
-        
+        return error.response ? error.response : { data: { success: false, message: error.message } }
     }
 }
 

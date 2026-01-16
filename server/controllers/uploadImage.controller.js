@@ -3,6 +3,7 @@ import uploadImageCloudinary from "../utils/uploadimageCloudinary.js";
 const uploadImageController = async (req, res) => {
   try {
     const file = req.file;
+    console.log("Upload Request File:", file ? { ...file, buffer: file.buffer ? "Buffer Present" : "No Buffer" } : "No File");
 
     if (!file) {
       return res.status(400).json({
