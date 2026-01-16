@@ -81,6 +81,12 @@ const UserMenu = ({closeMenu}) => {
           
         )
        }
+       {
+        isAdmin(user.role)&& (
+          <Link onClick={handleClose} to={"/dashboard/manage-gift-cards"} className='hover:bg-gray-100  py-1'>Manage Gift Cards</Link>
+          
+        )
+       }
       
         <Link onClick={handleClose} to={"/dashboard/my-orders"} className='hover:bg-gray-100  py-1'>My Orders</Link>
         <Link onClick={handleClose} to={"/dashboard/address"} className='hover:bg-gray-100   py-1'>Save Address</Link>

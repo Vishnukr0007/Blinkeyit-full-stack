@@ -161,6 +161,22 @@ const SummaryApi={
     getOrderItems:{
         url: "/api/order/order-list",
         method:"get"
+    },
+    createGiftCard : {
+        url : "/api/gift-card",
+        method : 'post'
+    },
+    getGiftCard : {
+        url : "/api/gift-card",
+        method : 'get'
+    },
+    updateGiftCard : {
+        url : "/api/gift-card",
+        method : 'put'
+    },
+    deleteGiftCard : {
+        url : "/api/gift-card",
+        method : 'delete'
     }
     
     

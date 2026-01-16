@@ -19,6 +19,7 @@ import Category from "../pages/Category";
 import SubCategory from "../pages/SubCategory";
 import UploadProduct from "../pages/UploadProduct";
 import ProductsAdmin from "../pages/ProductsAdmin";
+import GiftCardAdmin from "../pages/GiftCardAdmin";
 import AdminPermission from "../layouts/AdminPermission";
 import ProductListPage from "../pages/ProductListPage";
 import ProductDisplaypage from "../pages/ProductDisplaypage";
@@ -109,6 +110,10 @@ const router =createBrowserRouter([
               {
                 path:"products",
                 element:<AdminPermission><ProductsAdmin/></AdminPermission>
+              },
+              {
+                path:"manage-gift-cards",
+                element:<AdminPermission><GiftCardAdmin/></AdminPermission>
               }
 
             ]
