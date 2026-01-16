@@ -36,9 +36,8 @@ app.use(
     credentials: true,
     origin: (origin, callback) => {
         const allowedOrigins = [
-            process.env.FRONTEND_URL, 
-            "https://blinkeyit-full-stack-sooty.vercel.app", 
-            "https://blinkeyit-full-stacknew.vercel.app"
+            process.env.FRONTEND_URL 
+           
         ].filter(Boolean); // Remove undefined values
 
         if (!origin || allowedOrigins.includes(origin)) {
