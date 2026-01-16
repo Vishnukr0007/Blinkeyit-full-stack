@@ -116,10 +116,17 @@ const decreaseQty = (e) => {
         active:scale-95
         transition
         cursor-pointer
+        flex items-center justify-center gap-1
+        hover-bounce
       "
             onClick={handleAddToCart}
           >
-            {loading ? <ButtonLoader /> : " ADD" } 
+            {loading ? <ButtonLoader /> : (
+              <>
+                <FiPlus className="animate-bounce-icon" /> 
+                ADD
+              </>
+            )} 
           </button>
         </div>
       )}
