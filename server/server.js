@@ -15,6 +15,7 @@ import cartRouter from "./route/cart.route.js";
 import addressRouter from "./route/address.route.js";
 import orderRouter from "./route/order.route.js";
 import { webhookStripe } from "./controllers/order.controller.js";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
@@ -26,10 +27,9 @@ await connectDB();
 /* -------------------- STRIPE WEBHOOK (MUST BE FIRST) -------------------- */
 app.post(
   "/api/order/webhook",
-  express.raw({ type: "application/json" }),
+  bodyParser.raw({ type: "application/json" }),
   webhookStripe
 );
-
 /* -------------------- MIDDLEWARE -------------------- */
 app.use(
   cors({
