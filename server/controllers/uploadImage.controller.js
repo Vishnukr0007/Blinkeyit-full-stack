@@ -21,7 +21,7 @@ const uploadImageController = async (req, res) => {
       error: false,
     });
   } catch (error) {
-    console.error("Cloudinary upload error:", error);
+    console.error("Cloudinary upload error:", JSON.stringify(error, null, 2));
 
     return res.status(500).json({
       message: error.message || "Image upload failed",

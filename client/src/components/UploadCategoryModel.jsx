@@ -51,10 +51,13 @@ const UploadCategoryModel = ({close,fetchData}) => {
             const response = await uploadImage(file);
             const { data: ImageResponse } = response;
             setLoading(false)
-            setData((prev) => ({
-                ...prev,
-                image: ImageResponse.data.url
-            }));
+            
+            if(ImageResponse.success){
+                setData((prev) => ({
+                    ...prev,
+                    image: ImageResponse.data.url
+                }));
+            }
         } catch (error) {
             console.error("Image upload failed", error);
         }

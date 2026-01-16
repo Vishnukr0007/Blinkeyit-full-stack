@@ -51,10 +51,13 @@ const EditCategory = ({ data: CategoryData={} , close, fetchData }) => {
             const response = await uploadImage(file);
             const { data: ImageResponse } = response;
             setLoading(false)
-            setData((prev) => ({
+
+            if(ImageResponse.success){
+               setData((prev) => ({
                 ...prev,
                 image: ImageResponse.data.url
-            }));
+               }));
+            }
         } catch (error) {
             console.error("Image upload failed", error);
         }

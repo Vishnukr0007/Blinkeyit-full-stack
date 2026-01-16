@@ -39,10 +39,12 @@ const UploadSubCategory = ({close,fetchData}) => {
     const { data: ImageResponse } = response;
     setLoading(false)
     
-    setSubCategoryData((prev) => ({
-        ...prev,
-        image: ImageResponse.data.url
-    }));
+    if(ImageResponse.success){
+        setSubCategoryData((prev) => ({
+            ...prev,
+            image: ImageResponse.data.url
+        }));
+    }
    } catch (error) {
     console.error("Image upload failed", error);
   }
