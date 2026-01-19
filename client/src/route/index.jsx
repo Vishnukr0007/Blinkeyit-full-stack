@@ -27,6 +27,7 @@ import CartMobile from "../components/CartMobile";
 import CheckoutPage from "../pages/CheckoutPage";
 import SuccessPage from "../pages/SuccessPage";
 import Cancel from "../pages/Cancel";
+import OrdersAdmin from "../pages/OrdersAdmin";
 
 
 const router =createBrowserRouter([ 
@@ -114,6 +115,10 @@ const router =createBrowserRouter([
               {
                 path:"manage-gift-cards",
                 element:<AdminPermission><GiftCardAdmin/></AdminPermission>
+              },
+              {
+                path:"admin-orders",
+                element:<AdminPermission><OrdersAdmin/></AdminPermission>
               }
 
             ]

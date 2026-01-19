@@ -177,6 +177,14 @@ const SummaryApi={
     deleteGiftCard : {
         url : "/api/gift-card",
         method : 'delete'
+    },
+    getAllAdminOrders : {
+        url : "/api/order/admin-order-list",
+        method : 'get'
+    },
+    updateOrderStatus : {
+        url : "/api/order/update-order-status",
+        method : 'post'
     }
     
     

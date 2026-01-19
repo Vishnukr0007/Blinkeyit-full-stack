@@ -46,6 +46,7 @@ export const cashOnDeliveryController = async (req, res) => {
         delivery_address: addressId,
         subTotalAmt,
         totalAmt,
+        status: "PENDING",
       };
     });
 
@@ -205,6 +206,7 @@ export const getOrderProductItems = async (
       delivery_address: addressId,
       subTotalAmt: item.amount_total / 100,
       totalAmt: item.amount_total / 100,
+      status: "PENDING",
     });
   }
 
@@ -391,6 +393,69 @@ export const verifyPaymentController = async (req, res) => {
     console.error("Verify Payment Error:", error);
     return res.status(500).json({
       message: error.message || "Verification failed",
+      success: false,
+      error: true,
+    });
+  }
+};
+
+export const getAllOrdersController = async (req, res) => {
+  try {
+    const orders = await OrderModel.find()
+      .populate("userId", "name email mobile")
+      .populate("delivery_address")
+      .sort({ createdAt: -1 });
+
+    return res.json({
+      message: "All Orders fetched successfully",
+      success: true,
+      error: false,
+      data: orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || "Failed to fetch orders",
+      success: false,
+      error: true,
+    });
+  }
+};
+
+export const updateOrderStatusController = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    if (!orderId || !status) {
+      return res.status(400).json({
+        message: "Order ID and Status are required",
+        success: false,
+        error: true,
+      });
+    }
+
+    const updatedOrder = await OrderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({
+        message: "Order not found",
+        success: false,
+        error: true,
+      });
+    }
+
+    return res.json({
+      message: "Order status updated successfully",
+      success: true,
+      error: false,
+      data: updatedOrder,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || "Failed to update order status",
       success: false,
       error: true,
     });

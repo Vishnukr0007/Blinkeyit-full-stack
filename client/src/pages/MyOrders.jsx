@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-const STATUS_STEPS = ["PLACED", "PAID", "OUT_FOR_DELIVERY", "DELIVERED"];
+const STATUS_STEPS = ["PENDING", "SHIPPED", "DELIVERED"];
 
 const MyOrders = () => {
   const orders = useSelector((state) => state?.orders?.order) || [];
@@ -100,18 +100,25 @@ const MyOrders = () => {
                     <p className="text-xs font-medium mb-3">
                       Order Status
                     </p>
-
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center relative">
+                      <div className="absolute top-2 left-0 w-full h-0.5 bg-gray-100 dark:bg-zinc-800 -z-10" />
                       {STATUS_STEPS.map((step, index) => {
-                        const active =
-                          STATUS_STEPS.indexOf(order.payment_status) >= index;
+                        const currentStatusIndex = STATUS_STEPS.indexOf(order.status || "PENDING");
+                        const active = currentStatusIndex >= index && order.status !== "CANCELED";
+                        const isCanceled = order.status === "CANCELED";
 
                         return (
                           <div
                             key={step}
                             className="flex flex-col items-center flex-1"
                           >
-                            {active ? (
+                            <div className="bg-white dark:bg-zinc-900 px-2 relative z-10">
+                            {isCanceled ? (
+                              <XCircle
+                                size={16}
+                                className="text-red-500"
+                              />
+                            ) : active ? (
                               <CheckCircle
                                 size={16}
                                 className="text-green-600"
@@ -122,15 +129,17 @@ const MyOrders = () => {
                                 className="text-gray-300"
                               />
                             )}
+                            </div>
 
                             <span
-                              className={`mt-1 text-[10px] sm:text-xs text-center ${
+                              className={`mt-1 text-[10px] sm:text-xs text-center font-medium ${
+                                isCanceled ? "text-red-500" :
                                 active
                                   ? "text-green-600"
                                   : "text-gray-400"
                               }`}
                             >
-                              {step.replaceAll("_", " ")}
+                              {isCanceled && index === currentStatusIndex ? "CANCELED" : step.replaceAll("_", " ")}
                             </span>
                           </div>
                         );
