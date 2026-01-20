@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { BsCart3 } from "react-icons/bs";
@@ -21,6 +21,24 @@ const Header = () => {
   const isLoggedIn = Boolean(user?._id);
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openUserCartMenu, setUserCartMenu] = useState(false);
+  const userMenuRef = useRef(null);
+
+  // Handle click outside to close user menu
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setOpenUserMenu(false);
+      }
+    };
+
+    if (openUserMenu) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [openUserMenu]);
 
   const { totalQty, totalPrice } = useGlobalContext();
 
@@ -53,7 +71,7 @@ const Header = () => {
           <div className="flex items-center gap-6 relative">
             {/* ACCOUNT */}
             {isLoggedIn ? (
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <div
                   onClick={() => setOpenUserMenu((prev) => !prev)}
                   className="flex items-center gap-1 cursor-pointer"
