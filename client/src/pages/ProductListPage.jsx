@@ -156,7 +156,7 @@ const ProductListPage = () => {
               sm:grid-cols-3
               md:grid-cols-4
               lg:grid-cols-5
-              xl:grid-cols-6
+              xl:grid-cols-5
               gap-2
               sm:gap-4
               md:gap-6
