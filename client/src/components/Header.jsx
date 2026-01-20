@@ -103,14 +103,14 @@ const Header = () => {
             <button
               onClick={handleCartClick}
               disabled={!isLoggedIn}
-              className={`flex items-center gap-3 px-4 py-4 rounded-md transition   h-[52px] 
+              className={`flex items-center gap-3 px-4 py-4 rounded-md transition h-[52px] group
                 ${
                   isLoggedIn
                     ? "bg-green-700 text-white hover:bg-green-800 cursor-pointer"
                     : "bg-gray-300 text-gray-600 cursor-not-allowed"
                 }`}
             >
-              <BsCart3 size={20} />
+              <BsCart3 size={20} className="animate-bounce-icon" />
 
               <div className="text-left text-sm leading-tight">
                 {totalQty > 0 ? (
