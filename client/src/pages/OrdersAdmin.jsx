@@ -107,14 +107,14 @@ const OrdersAdmin = () => {
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
             Order Management
           </h1>
           <p className="text-gray-500 text-sm mt-1">
             Manage and track all customer orders
           </p>
         </div>
-        <div className="bg-white dark:bg-zinc-800 px-4 py-2 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-700 flex items-center gap-3">
+        <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
           <Package className="text-green-600" />
           <span className="font-semibold text-lg">{orders.length}</span>
           <span className="text-gray-500 text-sm">Total Orders</span>
@@ -122,9 +122,9 @@ const OrdersAdmin = () => {
       </div>
 
       {!orders.length ? (
-        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-zinc-800">
+        <div className="bg-white rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
           <Package className="mx-auto text-gray-300 mb-4" size={64} />
-          <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+          <h3 className="text-xl font-semibold text-gray-700">
             No orders found
           </h3>
           <p className="text-gray-500 mt-2">When customers place orders, they will appear here.</p>
@@ -134,16 +134,16 @@ const OrdersAdmin = () => {
           {orders.map((order) => (
             <div
               key={order._id}
-              className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+              className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
             >
               {/* Top Banner */}
-              <div className="bg-gray-50/50 dark:bg-zinc-800/50 px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-4">
+              <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex flex-wrap justify-between items-center gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="bg-white dark:bg-zinc-800 p-2 rounded-lg border border-gray-100 dark:border-zinc-700">
+                  <div className="bg-white p-2 rounded-lg border border-gray-100">
                     <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">
                       Order ID
                     </p>
-                    <p className="text-sm font-mono font-medium text-gray-700 dark:text-gray-300">
+                    <p className="text-sm font-mono font-medium text-gray-700">
                       #{order.orderId}
                     </p>
                   </div>
@@ -151,7 +151,7 @@ const OrdersAdmin = () => {
                     <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">
                       Placed On
                     </p>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <p className="text-sm font-medium text-gray-700">
                       {new Date(order.createdAt).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
@@ -196,10 +196,10 @@ const OrdersAdmin = () => {
                     <img
                       src={order.product_details?.image?.[0]}
                       alt={order.product_details?.name}
-                      className="w-24 h-24 rounded-2xl object-cover border border-gray-100 dark:border-zinc-800"
+                      className="w-24 h-24 rounded-2xl object-cover border border-gray-100"
                     />
                     <div className="flex-1">
-                      <h3 className="font-bold text-gray-800 dark:text-white line-clamp-2 leading-tight">
+                      <h3 className="font-bold text-gray-800 line-clamp-2 leading-tight">
                         {order.product_details?.name}
                       </h3>
                       <div className="mt-3 flex items-center gap-2 text-green-600 font-bold text-lg">
@@ -214,11 +214,11 @@ const OrdersAdmin = () => {
                   </div>
 
                   {/* Customer & Address Info */}
-                  <div className="space-y-3 bg-gray-50/30 dark:bg-zinc-800/30 p-4 rounded-2xl border border-gray-100/50 dark:border-zinc-800/50">
+                  <div className="space-y-3 bg-gray-50/30 p-4 rounded-2xl border border-gray-100/50">
                     <div className="flex items-start gap-3">
                       <User size={16} className="text-gray-400 mt-1" />
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 leading-tight">
+                        <p className="text-sm font-semibold text-gray-800 leading-tight">
                           {order.userId?.name || "Customer"}
                         </p>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
@@ -232,13 +232,13 @@ const OrdersAdmin = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3 pt-2 border-t border-gray-100 dark:border-zinc-800">
+                    <div className="flex items-start gap-3 pt-2 border-t border-gray-100">
                       <MapPin size={16} className="text-red-500 mt-1" />
                       <div>
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-0.5">
                           Delivery Address
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <p className="text-xs text-gray-600 leading-relaxed">
                           {order.delivery_address?.fullAddress || "No address provided"}
                         </p>
                       </div>
@@ -253,5 +253,4 @@ const OrdersAdmin = () => {
     </div>
   );
 };
-
 export default OrdersAdmin;

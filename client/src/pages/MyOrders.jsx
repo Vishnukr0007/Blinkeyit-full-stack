@@ -40,7 +40,7 @@ const MyOrders = () => {
           return (
             <div
               key={order._id}
-              className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 overflow-hidden"
+              className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
             >
               {/* ===== HEADER ===== */}
               <div className="px-4 py-3 flex justify-between items-center">
@@ -79,7 +79,7 @@ const MyOrders = () => {
                     {order.product_details?.name}
                   </h3>
 
-                  <div className="flex items-center gap-1 mt-1 text-gray-700 dark:text-gray-300">
+                  <div className="flex items-center gap-1 mt-1 text-gray-700">
                     <IndianRupee size={13} />
                     <span className="text-sm font-medium">
                       {order.totalAmt}
@@ -94,14 +94,14 @@ const MyOrders = () => {
 
               {/* ===== EXPANDABLE ===== */}
               {isOpen && (
-                <div className="border-t dark:border-zinc-800 px-4 py-4 space-y-4 animate-fadeIn">
+                <div className="border-t px-4 py-4 space-y-4 animate-fadeIn">
                   {/* 🚚 STATUS */}
                   <div>
                     <p className="text-xs font-medium mb-3">
                       Order Status
                     </p>
                     <div className="flex justify-between items-center relative">
-                      <div className="absolute top-2 left-0 w-full h-0.5 bg-gray-100 dark:bg-zinc-800 -z-10" />
+                      <div className="absolute top-2 left-0 w-full h-0.5 bg-gray-100 -z-10" />
                       {STATUS_STEPS.map((step, index) => {
                         const currentStatusIndex = STATUS_STEPS.indexOf(order.status || "PENDING");
                         const active = currentStatusIndex >= index && order.status !== "CANCELED";
@@ -112,7 +112,7 @@ const MyOrders = () => {
                             key={step}
                             className="flex flex-col items-center flex-1"
                           >
-                            <div className="bg-white dark:bg-zinc-900 px-2 relative z-10">
+                            <div className="bg-white px-2 relative z-10">
                             {isCanceled ? (
                               <XCircle
                                 size={16}
