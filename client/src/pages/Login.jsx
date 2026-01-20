@@ -104,7 +104,7 @@ const Login = () => {
               </div>
             </div>
           </div>
-          <Link to={"/forgot-password"} className="block ml-auto hover:text-yellow-500 underline">Forgot Password ?</Link>
+          <Link to={"/forgot-password"} className="block ml-auto hover:text-yellow-500 underline cursor-pointer">Forgot Password ?</Link>
 
           {/* Login Button */}
           <button
@@ -119,7 +119,7 @@ const Login = () => {
 
         <p className="text-center mt-3">
           Don t have an account?{" "}
-          <Link to="/register" className="font-semibold text-green-800">
+          <Link to="/register" className="font-semibold text-green-800 cursor-pointer">
             Register
           </Link>
         </p>

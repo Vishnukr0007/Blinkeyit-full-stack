@@ -60,7 +60,7 @@ const Header = () => {
       {/* ================= DESKTOP HEADER ================= */}
       {!isMobile && (
         <div className="container mx-auto flex items-center h-20 px-4 sm:px-6 lg:px-8">
-          <Link to="/">
+          <Link to="/" className="cursor-pointer">
             <img src={newlogo} className="w-[160px]" alt="logo" />
           </Link>
 
@@ -93,7 +93,7 @@ const Header = () => {
             ) : (
               <button
                 onClick={() => navigate("/login")}
-                className="text-sm hover:underline"
+                className="text-sm hover:underline cursor-pointer"
               >
                 Login
               </button>
@@ -133,13 +133,13 @@ const Header = () => {
       {isMobile && !isSearchPage && (
         <>
           <div className="flex items-center justify-between px-4 sm:px-6 h-16">
-            <Link to="/">
+            <Link to="/" className="cursor-pointer">
               <img src={newlogo} className="w-[100px]" alt="logo" />
             </Link>
 
             <div className="flex items-center gap-4">
               {/* USER ICON */}
-              <FaUserCircle size={22} onClick={handleMobileUser} />
+              <FaUserCircle size={22} onClick={handleMobileUser} className="cursor-pointer" />
             </div>
           </div>
 

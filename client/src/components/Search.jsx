@@ -35,7 +35,7 @@ const Search = () => {
   return (
     <div className="w-full h-11 rounded-lg border border-gray-200 flex items-center bg-slate-50 px-2">
       {/* LEFT ICON */}
-      <button className="px-2">
+      <button className="px-2 cursor-pointer">
         {isSearchPage && isMobile ? (
           <FaArrowLeft
             size={18}
@@ -52,7 +52,7 @@ const Search = () => {
         {!isSearchPage ? (
           <div
             onClick={() => navigate("/search")}
-            className="text-sm text-neutral-500 cursor-text truncate"
+            className="text-sm text-neutral-500 cursor-pointer truncate"
           >
             <TypeAnimation
               sequence={[

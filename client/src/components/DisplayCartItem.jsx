@@ -46,7 +46,7 @@ const DisplayCartItem = ({ close }) => {
             My Cart ({totalQty})
           </h2>
 
-          <Link to="/" className="lg:hidden">
+          <Link to="/" className="lg:hidden cursor-pointer">
             <IoClose size={22} />
           </Link>
 
@@ -77,7 +77,7 @@ const DisplayCartItem = ({ close }) => {
                 className="w-40 opacity-80"
               />
               <p className="text-sm mt-3 p-2">Your cart is empty</p>
-              <Link onClick={close} to={"/"} className="block bg-green-700 hover:bg-green-600 px-4 py-2 rounded text-white">Shop Now</Link>
+              <Link onClick={close} to={"/"} className="block bg-green-700 hover:bg-green-600 px-4 py-2 rounded text-white cursor-pointer">Shop Now</Link>
             </div>
           ) : (
             cartItem.map((item) => {
