@@ -69,7 +69,7 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-gray-800 mb-6 text-sm underline decoration-green-500 underline-offset-8">Partner with us</h3>
             <ul className="space-y-3 text-sm text-gray-500">
-              <li><Link to="/sell-on-blinkit" className="hover:text-green-600 transition-colors">Sell on Blinkit</Link></li>
+              <li><Link to="/sell-on-blinkeyit" className="hover:text-green-600 transition-colors">Sell on Blinkeyit</Link></li>
               <li><Link to="/delivery-partner" className="hover:text-green-600 transition-colors">Become a Delivery Partner</Link></li>
               <li><Link to="/franchise" className="hover:text-green-600 transition-colors">Become a Franchisee</Link></li>
             </ul>
@@ -103,7 +103,7 @@ const Footer = () => {
             <p className="font-medium">© Blink Commerce Private Limited 2025</p>
           </div>
           <div className="text-gray-400 text-[10px] max-w-2xl text-center md:text-right leading-relaxed font-light">
-            <p>“Blinkit” is owned & managed by "Blink Commerce Private Limited" and is not related, linked or interconnected in whatsoever manner or nature, to “GROFFR.COM” which is a real estate services business operated by “Redstone Consultancy Services Private Limited”.</p>
+            <p>“Blinkeyit” is owned & managed by "Blink Commerce Private Limited" and is not related, linked or interconnected in whatsoever manner or nature, to “GROFFR.COM” which is a real estate services business operated by “Redstone Consultancy Services Private Limited”.</p>
           </div>
         </div>
       </div>

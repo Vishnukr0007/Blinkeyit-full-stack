@@ -17,6 +17,7 @@ import {
   Mail,
 } from "lucide-react";
 import DisplayPriceInRupees from "../utils/DisplayPriceInRupees";
+import Loading from "../components/Loading";
 
 const STATUS_OPTIONS = ["PENDING", "SHIPPED", "DELIVERED", "CANCELED"];
 
@@ -99,11 +100,7 @@ const OrdersAdmin = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
