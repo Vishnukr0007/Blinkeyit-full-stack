@@ -65,7 +65,7 @@ const Home = () => {
             })
 
           ):(
-            categoryData.map((cat,index)=>{
+            categoryData.slice(0, 7).map((cat,index)=>{
               return(
                 <div className='cursor-pointer' key={cat._id+index+"displayCategory"} onClick={()=>handleRedirectProductListPage(cat._id,cat.name)}>
                   <div>

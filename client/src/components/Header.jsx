@@ -93,7 +93,7 @@ const Header = () => {
             ) : (
               <button
                 onClick={() => navigate("/login")}
-                className="text-sm hover:underline cursor-pointer"
+                className="text-sm hover:underline cursor-pointer"  
               >
                 Login
               </button>
