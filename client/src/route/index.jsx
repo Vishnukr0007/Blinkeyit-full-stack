@@ -28,131 +28,136 @@ import CheckoutPage from "../pages/CheckoutPage";
 import SuccessPage from "../pages/SuccessPage";
 import Cancel from "../pages/Cancel";
 import OrdersAdmin from "../pages/OrdersAdmin";
+import AllCategories from "../pages/AllCategories";
 
 
-const router =createBrowserRouter([ 
-    {
-          path: "/",
-          element:<App/>,
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
 
-          children:[
-            {
-                path :"/",
-                element : <Home/>   
-            },
-            {
-              path :"search",
-              element :<Searchpage/>
+    children: [
+      {
+        path: "/",
+        element: <Home />
+      },
+      {
+        path: "search",
+        element: <Searchpage />
+      },
+      {
+        path: "all-categories",
+        element: <AllCategories />
+      },
+      {
+        path: "login",
+        element: <Login />
+      },
+      {
+        path: "register",
+        element: <Register />
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />
+      },
+      {
+        path: "verification-otp",
+        element: <OtpVerification />
+      }, {
+        path: "reset-password",
+        element: <ResetPassword />
+      },
+      {
+        path: "user",
+        element: <UerMenuMobile />
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+        children: [
+          {
+            path: "profile",
+            element: <Profile />
           },
           {
-           path:"login",
-           element:<Login/>
+            path: "my-orders",
+            element: <MyOrders />
           },
           {
-            path:"register",
-            element:<Register/>
+            path: "address",
+            element: <Addresses />
           },
           {
-            path:"forgot-password",
-            element:<ForgotPassword/>
+            path: "e-gift-cards",
+            element: <EGiftCards />
           },
           {
-           path:"verification-otp",
-           element:<OtpVerification/>
-          },{
-            path:"reset-password",
-            element:<ResetPassword/>
+            path: "faqs",
+            element: <Faqs />
           },
           {
-            path:"user",
-            element:<UerMenuMobile/>
+            path: "accountprivacy",
+            element: <AccountPrivacy />
           },
           {
-            path:"dashboard",
-            element:<Dashboard/>,
-            children:[
-              {
-                path:"profile",
-                element:<Profile/>
-              },
-              {
-                path:"my-orders",
-                element:<MyOrders/>
-              },
-              {
-                path:"address",
-                element:<Addresses/>
-              },
-              {
-                path:"e-gift-cards",
-                element:<EGiftCards/>
-              },
-              {
-                path:"faqs",
-                element:<Faqs/>
-              },
-              {
-                path:"accountprivacy",
-                element:<AccountPrivacy/>
-              },
-              {
-                path:"category",
-                element:<AdminPermission><Category/></AdminPermission>
-              },
-              {
-                path:"subcategory",
-                element:<AdminPermission><SubCategory/></AdminPermission>
-              },
-              {
-                path:"uploadproduct",
-                element: <AdminPermission><UploadProduct/></AdminPermission>
+            path: "category",
+            element: <AdminPermission><Category /></AdminPermission>
+          },
+          {
+            path: "subcategory",
+            element: <AdminPermission><SubCategory /></AdminPermission>
+          },
+          {
+            path: "uploadproduct",
+            element: <AdminPermission><UploadProduct /></AdminPermission>
 
-              },
-              {
-                path:"products",
-                element:<AdminPermission><ProductsAdmin/></AdminPermission>
-              },
-              {
-                path:"manage-gift-cards",
-                element:<AdminPermission><GiftCardAdmin/></AdminPermission>
-              },
-              {
-                path:"admin-orders",
-                element:<AdminPermission><OrdersAdmin/></AdminPermission>
-              }
-
-            ]
           },
           {
-            path:":category",
-            children:[
-              {
-                path:":subCategory",
-                element:<ProductListPage/>
-              }
-            ]
-          },{
-            path:"product/:product",
-            element:<ProductDisplaypage/>
-          },{
-            path:"cart",
-            element:<CartMobile/>
-          },{
-            path:"checkout",
-            element:<CheckoutPage/>
-          },{
-            path:"success",
-            element:<SuccessPage/>
-          },{
-            path:"/cancel",
-            element:<Cancel/>
+            path: "products",
+            element: <AdminPermission><ProductsAdmin /></AdminPermission>
+          },
+          {
+            path: "manage-gift-cards",
+            element: <AdminPermission><GiftCardAdmin /></AdminPermission>
+          },
+          {
+            path: "admin-orders",
+            element: <AdminPermission><OrdersAdmin /></AdminPermission>
           }
 
-          
-          
-           
-          ]
-    }
+        ]
+      },
+      {
+        path: ":category",
+        children: [
+          {
+            path: ":subCategory",
+            element: <ProductListPage />
+          }
+        ]
+      }, {
+        path: "product/:product",
+        element: <ProductDisplaypage />
+      }, {
+        path: "cart",
+        element: <CartMobile />
+      }, {
+        path: "checkout",
+        element: <CheckoutPage />
+      }, {
+        path: "success",
+        element: <SuccessPage />
+      }, {
+        path: "/cancel",
+        element: <Cancel />
+      }
+
+
+
+
+    ]
+  }
 ])
 
 export default router
