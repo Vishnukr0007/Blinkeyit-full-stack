@@ -49,10 +49,7 @@ const Home = () => {
 
 
       </div>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-6 flex items-center justify-between">
-        <h2 className="font-semibold text-lg md:text-xl">Categories</h2>
-        <Link to="/all-categories" className="text-green-600 font-semibold hover:underline text-sm md:text-base">See All</Link>
-      </div>
+      
       {/* Category display section */}
       <div className=" container mx-auto px-4 sm:px-6 lg:px-8 my-4 md:my-6 grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-3 md:gap-4">
         {
