@@ -17,7 +17,7 @@ const ProductListPage = () => {
   const params = useParams();
   const AllSubCategory = useSelector((state) => state.product.allsubCategory);
   const [DisplaySubcategory, setDisplaySubcategory] = useState([]);
-  
+
 
   const subCategoryParts = params?.subCategory?.split("-") || [];
   const subcategoryName = subCategoryParts?.slice(0, -1)?.join(" ");
@@ -68,120 +68,117 @@ const ProductListPage = () => {
       return filterData ? filterData : null;
     });
     setDisplaySubcategory(sub);
-   
+
   }, [params, AllSubCategory]);
 
   return (
-<section className="bg-gray-50">
-  <div className="container mx-auto ">
+    <section className="bg-gray-50">
+      <div className="container mx-auto ">
 
-    {/* MAIN BOX */}
-    <div className="bg-white shadow-md  overflow-hidden">
+        {/* MAIN BOX */}
+        <div className="bg-white shadow-md  overflow-hidden">
 
-      {/* STICKY SUBCATEGORY HEADER */}
-      <div className="sticky top-0 z-30 bg-white border-b  border-b-gray-200 px-4 py-3">
-        <h3 className="font-semibold capitalize text-lg">
-          {subcategoryName || "Subcategory"}
-        </h3>
-      </div>
+          {/* STICKY SUBCATEGORY HEADER */}
+          <div className="sticky top-0 z-30 bg-white border-b  border-b-gray-200 px-4 py-3">
+            <h3 className="font-semibold capitalize text-lg">
+              {subcategoryName || "Subcategory"}
+            </h3>
+          </div>
 
-      {/* CONTENT AREA */}
-      <div
-        className="
-          grid
-          grid-cols-[80px_1fr]
-          sm:grid-cols-[120px_1fr]
+          {/* CONTENT AREA */}
+          <div
+            className="
+          flex flex-col
+          md:grid
           md:grid-cols-[180px_1fr]
           lg:grid-cols-[220px_1fr]
         "
-        style={{ height: "calc(100vh - 140px)" }} // header + subheader
-      >
+            style={{ height: "calc(100vh - 140px)" }} // header + subheader
+          >
 
-     {/* LEFT SIDEBAR (Scrollable & Reduced Height) */}
-<div className="border-r border-r-gray-200 bg-gray-50 h-full">
-  <div className="
-      h-[420px]              /* 👈 controls 4 items */
-      overflow-y-auto
-      p-3
-      grid gap-3
-      scrollbar-thin
+            {/* SUB-CATEGORY NAVIGATION (Responsive) */}
+            <div className="border-r border-r-gray-200 bg-gray-50 md:h-full overflow-hidden">
+              <div className="
+      flex md:flex-col
+      overflow-x-auto md:overflow-y-auto
+      p-2 md:p-3
+      gap-2 md:gap-3
+      scrollbar-none md:scrollbar-thin
       scrollbar-thumb-gray-300
       scrollbar-track-transparent
+      max-h-[120px] md:max-h-none /* Limit mobile height */
     ">
-    {DisplaySubcategory.map((s) => {
-      const categorySlug = params.category;
-      const url = `/${categorySlug}/${valideURLConvert(s.name)}-${s._id}`;
+                {DisplaySubcategory.map((s) => {
+                  const categorySlug = params.category;
+                  const url = `/${categorySlug}/${valideURLConvert(s.name)}-${s._id}`;
 
-      return (
-        <Link
-          key={s._id}
-          to={url}
-          className={`
-            flex flex-col items-center gap-2
+                  return (
+                    <Link
+                      key={s._id}
+                      to={url}
+                      className={`
+            flex flex-row md:flex-col items-center gap-2
             bg-white rounded-lg p-2
-            border transition
-            ${
-              subcategoryId === s._id
-                ? "border-green-500 bg-green-50"
-                : "border-transparent hover:bg-green-50"
-            }
+            border transition flex-shrink-0 min-w-[100px] md:min-w-0
+            ${subcategoryId === s._id
+                          ? "border-green-500 bg-green-50 shadow-sm"
+                          : "border-gray-100 hover:border-gray-200"
+                        }
           `}
-        >
-          <div className="w-12 h-12">
-            <img
-              src={s.image}
-              alt={s.name}
-              className="w-full h-full object-contain"
-            />
-          </div>
+                    >
+                      <div className="w-8 h-8 md:w-12 md:h-12 flex-shrink-0">
+                        <img
+                          src={s.image}
+                          alt={s.name}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
 
-          <p className="text-[11px] font-medium text-center line-clamp-2">
-            {s.name}
-          </p>
-        </Link>
-      );
-    })}
-  </div>
-</div>
+                      <p className="text-[10px] md:text-[11px] font-medium text-center line-clamp-2 md:line-clamp-2">
+                        {s.name}
+                      </p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
 
 
-        {/* RIGHT PRODUCT AREA (Scrollable) */}
-        <main className="h-full overflow-y-auto p-4">
+            {/* RIGHT PRODUCT AREA (Scrollable) */}
+            <main className="flex-1 h-full overflow-y-auto p-3 md:p-4">
 
-          {/* PRODUCT GRID */}
-          <div
-            className="
+              {/* PRODUCT GRID */}
+              <div
+                className="
               grid
               grid-cols-2
               sm:grid-cols-3
-              md:grid-cols-4
-              lg:grid-cols-5
+              md:grid-cols-3
+              lg:grid-cols-4
               xl:grid-cols-5
-              gap-2
-              sm:gap-4
-              md:gap-6
+              gap-3 md:gap-6
             "
-          >
-            {data.map((p, index) => (
-              <CardProduct
-                key={p._id + "productSubCategory" + index}
-                data={p}
-              />
-            ))}
+              >
+                {data.map((p, index) => (
+                  <CardProduct
+                    key={p._id + "productSubCategory" + index}
+                    data={p}
+                  />
+                ))}
+              </div>
+
+              {/* LOADING */}
+              {loading && (
+                <div className="flex justify-center py-8">
+                  <Loading />
+                </div>
+              )}
+            </main>
+
           </div>
-
-          {/* LOADING */}
-          {loading && (
-            <div className="flex justify-center py-8">
-              <Loading />
-            </div>
-          )}
-        </main>
-
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
   );
 };
