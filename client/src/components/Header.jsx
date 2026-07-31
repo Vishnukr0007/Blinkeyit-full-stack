@@ -11,6 +11,7 @@ import useMobile from "../hooks/useMobile";
 import { DisplayPriceInRupees } from "../utils/DisplayPriceInRupees";
 import { useGlobalContext } from "../provider/GlobalProvider";
 import DisplayCartItem from "./DisplayCartItem";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const isMobile = useMobile();
@@ -59,16 +60,37 @@ const Header = () => {
     <header className="sticky top-0 z-40 bg-white shadow-sm">
       {/* ================= DESKTOP HEADER ================= */}
       {!isMobile && (
-        <div className="container mx-auto flex items-center h-20 px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="cursor-pointer">
-            <img src={newlogo} className="w-[160px]" alt="logo" />
-          </Link>
+        <div className="container mx-auto flex items-center h-20 px-4 sm:px-6 lg:px-8 justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="cursor-pointer">
+              <img src={newlogo} className="w-[150px]" alt="logo" />
+            </Link>
 
-          <div className="flex-1 mx-10">
+            {/* LOCATION & 8-MIN DELIVERY BADGE */}
+            <div className="hidden xl:flex flex-col text-xs border-l border-gray-200 pl-4 py-1">
+              <span className="font-extrabold text-gray-900 flex items-center gap-1">
+                ⚡ Delivering in <span className="text-green-700 font-black">8 Mins</span>
+              </span>
+              <span className="text-gray-500 truncate max-w-[140px] text-[11px]">
+                Home - Sector 62, Noida 📍
+              </span>
+            </div>
+          </div>
+
+          <div className="flex-1 max-w-xl mx-4">
             <Search />
           </div>
 
-          <div className="flex items-center gap-6 relative">
+          <div className="flex items-center gap-4 relative">
+            {/* BLINKEY COINS BADGE */}
+            <div
+              onClick={() => toast("🪙 You have 250 Blinkey Coins! Use at checkout.")}
+              title="Blinkey Coins Balance"
+              className="hidden lg:flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-2xs cursor-pointer hover:bg-amber-100 transition"
+            >
+              <span>🪙</span>
+              <span>250 Coins</span>
+            </div>
             {/* ACCOUNT */}
             {isLoggedIn ? (
               <div className="relative" ref={userMenuRef}>

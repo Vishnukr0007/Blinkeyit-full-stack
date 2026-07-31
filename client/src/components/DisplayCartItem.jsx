@@ -7,6 +7,7 @@ import { priceWithDiscount } from "../utils/priceWithDiscount";
 import AddTocartButton from "./AddTocartButton";
 import EmptyCartImage from "../assets/empty_cart.webp";
 import { useSelector } from "react-redux";
+import SmartCartHeader from "./SmartCartHeader";
 import toast from "react-hot-toast";
 
 const DisplayCartItem = ({ close }) => {
@@ -58,12 +59,14 @@ const DisplayCartItem = ({ close }) => {
           </button>
         </div>
 
-        {/* ================= SAVINGS BAR ================= */}
-        {totalSavings > 0 && (
-          <div className="bg-blue-100 border border-blue-200 px-3 py-3 mt-3 mx-4 rounded-2xl">
-            <p className="text-sm font-medium text-blue-700">
-              🎉 You saved {DisplayPriceInRupees(totalSavings)} on this order
-            </p>
+        {/* ================= SMART CART HEALTH & FREE DELIVERY BAR ================= */}
+        {cartItem.length > 0 && (
+          <div className="px-3 pt-3">
+            <SmartCartHeader
+              totalPrice={totalPrice}
+              originalTotal={originalTotal}
+              totalSavings={totalSavings}
+            />
           </div>
         )}
 

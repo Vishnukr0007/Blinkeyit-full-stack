@@ -2,7 +2,8 @@ import { TypeAnimation } from "react-type-animation";
 import { IoClose, IoSearchOutline } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaMicrophone } from "react-icons/fa";
+import toast from "react-hot-toast";
 import useMobile from "../hooks/useMobile";
 
 const Search = () => {
@@ -74,6 +75,30 @@ const Search = () => {
           />
         )}
       </div>
+
+      {/* VOICE SEARCH BUTTON */}
+      <button
+        onClick={() => {
+          if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            toast.error("Voice search is not supported in this browser.");
+            return;
+          }
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const recognition = new SpeechRecognition();
+          recognition.onstart = () => toast("🎙️ Listening... Speak now!");
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setSearchText(transcript);
+            navigate(`/search?q=${transcript}`);
+            toast.success(`Voice Recognized: "${transcript}"`);
+          };
+          recognition.start();
+        }}
+        title="Voice Search"
+        className="px-2 text-gray-400 hover:text-green-700 transition cursor-pointer"
+      >
+        <FaMicrophone size={16} />
+      </button>
 
       {/* CLEAR BUTTON */}
       {isSearchPage && searchText && (
