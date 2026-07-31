@@ -90,7 +90,7 @@ export const getAddressController=async(req,res)=>{
     try {
         const userId=req.userId
 
-        const data=await AddressModel.find({userId :userId}).sort({createdAt :-1})
+        const data=await AddressModel.find({userId :userId, status: true}).sort({createdAt :-1})
 
         return res.json({
             data:data,

@@ -16,7 +16,7 @@ import {
   Phone,
   Mail,
 } from "lucide-react";
-import DisplayPriceInRupees from "../utils/DisplayPriceInRupees";
+import{DisplayPriceInRupees}  from "../utils/DisplayPriceInRupees";
 import Loading from "../components/Loading";
 
 const STATUS_OPTIONS = ["PENDING", "SHIPPED", "DELIVERED", "CANCELED"];

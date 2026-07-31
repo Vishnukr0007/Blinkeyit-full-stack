@@ -3,9 +3,9 @@ import SubCategoryModel from "../models/subcategory.model.js";
 export const AddSubCategoryController= async(req,res)=>{
     try {
         const {name,image,category}=req.body
-        if(!name&& !image && !category[0]){
+        if(!name || !image || !Array.isArray(category) || category.length === 0){
             return res.status(400).json({
-                message:" Please Provide Name ,image,Category ",
+                message:" Please Provide Name, image, Category ",
                 error:true,
                 success:false
             })

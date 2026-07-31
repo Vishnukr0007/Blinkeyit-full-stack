@@ -77,16 +77,18 @@ const ProductDisplaypage = () => {
           <div className="flex flex-col">
             {/* Main Image */}
             <div className="w-full h-[350px]  flex items-center justify-center overflow-hidden group">
-              <img
-                src={data.image[image]}
-                alt={data.name}
-                className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110 cursor-zoom-in"
-              />
+              {data.image?.[image] && (
+                <img
+                  src={data.image[image]}
+                  alt={data.name}
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110 cursor-zoom-in"
+                />
+              )}
             </div>
 
             {/* Dots Indicator */}
             <div className="flex justify-center gap-2 mt-3">
-              {data.image.map((_, index) => (
+              {(Array.isArray(data.image) ? data.image : []).map((_, index) => (
                 <span
                   key={index}
                   className={`w-2 h-2 rounded-full ${

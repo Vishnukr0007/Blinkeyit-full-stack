@@ -19,10 +19,10 @@ const auth=async(req,res,next)=>{
         
         
     } catch (error) {
-        return res.status(500).json({
-             message:error.message|| error,
-            error:true,
-            sucess:false
+        return res.status(401).json({
+             message: error.message || error,
+             error: true,
+             success: false
         })
     }
 }

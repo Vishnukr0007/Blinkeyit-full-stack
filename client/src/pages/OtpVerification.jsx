@@ -16,7 +16,7 @@ const OtpVerification = () => {
     if(!location?.state?.email){
         navigate("/forgot-password")
     }
-  },)
+  },[location, navigate])
   const isFormValid = data.every(el => el)
 
   const handleSubmit = async (e) => {
@@ -67,7 +67,7 @@ const OtpVerification = () => {
                            <input
                            key={"otp"+index}
                            type="text"
-                           id="otp"
+                           id={`otp-${index}`}
                            ref={(ref)=>{
                                inputRef.current[index]=ref
                                return ref

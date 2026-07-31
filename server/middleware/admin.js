@@ -6,9 +6,9 @@ export const admin= async(req,res,next)=>{
 
     const user= await UserModel.findById(userId);
 
-    if(user.role !== 'ADMIN'){
-        return res.status(400).json({
-            message:"Permission Denial",
+    if(!user || user.role !== 'ADMIN'){
+        return res.status(403).json({
+            message:"Permission Denied",
             error:true,
             success:false
         })

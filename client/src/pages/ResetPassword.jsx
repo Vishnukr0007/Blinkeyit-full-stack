@@ -108,7 +108,7 @@ const ResetPassword = () => {
            <div className="grid">
                       <div className="flex items-center border rounded-lg p-2  focus-within:border-yellow-500">
                         <input
-                          type={ShowConfirmPassword ? "text" : "Password"}
+                          type={ShowConfirmPassword ? "text" : "password"}
                           placeholder="Enter your confirm Password"
                           id="confirmpassword"
                           name="confirmPassword"
