@@ -13,16 +13,16 @@ const Home = () => {
 
   const handleRedirectProductListPage = (id, cat) => {
     const subcategory = subCategoryData.find(sub =>
-      sub.category.some(c => c._id === id)
+      Array.isArray(sub.category) && sub.category.some(c => (c?._id || c) === id)
     );
 
-    if (!subcategory) {
-      console.error("Subcategory not found for category id:", id);
-      return;
+    if (subcategory) {
+      const url = `/${valideURLConvert(cat)}-${id}/${valideURLConvert(subcategory.name)}-${subcategory._id}`;
+      navigate(url);
+    } else {
+      const url = `/${valideURLConvert(cat)}-${id}`;
+      navigate(url);
     }
-
-    const url = `/${valideURLConvert(cat)}-${id}/${valideURLConvert(subcategory.name)}-${subcategory._id}`;
-    navigate(url);
   };
 
 

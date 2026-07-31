@@ -57,19 +57,19 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
   
 
   const redirectUrl = useMemo(() => {
-  if (!subCategoryData || subCategoryData.length === 0) return null;
+    const subcategory = subCategoryData?.find(sub =>
+      Array.isArray(sub.category) &&
+      sub.category.some(c => (c?._id || c) === id)
+    );
 
-  const subcategory = subCategoryData.find(sub =>
-    Array.isArray(sub.category) &&
-    sub.category.some(c => c?._id === id)
-  );
+    if (subcategory) {
+      return `/${valideURLConvert(name)}-${id}/${valideURLConvert(
+        subcategory.name
+      )}-${subcategory._id}`;
+    }
 
-  if (!subcategory) return null;
-
-  return `/${valideURLConvert(name)}-${id}/${valideURLConvert(
-    subcategory.name
-  )}-${subcategory._id}`;
-}, [subCategoryData, id, name]);
+    return `/${valideURLConvert(name)}-${id}`;
+  }, [subCategoryData, id, name]);
 
 
   return (

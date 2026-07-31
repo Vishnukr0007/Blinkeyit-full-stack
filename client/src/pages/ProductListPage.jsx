@@ -19,31 +19,38 @@ const ProductListPage = () => {
   const [DisplaySubcategory, setDisplaySubcategory] = useState([]);
 
 
+  const categoryParts = params?.category?.split("-") || [];
+  const categoryName = categoryParts?.slice(0, -1)?.join(" ");
+
   const subCategoryParts = params?.subCategory?.split("-") || [];
   const subcategoryName = subCategoryParts?.slice(0, -1)?.join(" ");
 
-  const categoryId = params?.category?.split("-").pop() || "";
+  const categoryId = categoryParts.at(-1) || "";
   const subcategoryId = subCategoryParts.at(-1) || "";
 
   const fetchProductData = async () => {
     try {
       setLoading(true);
+      
+      const apiEndpoint = subcategoryId 
+        ? SummaryApi.getProductByCategoryAndSubcategory 
+        : SummaryApi.getProductByCategory;
+
+      const payload = subcategoryId
+        ? { categoryId, subcategoryId, page, limit: 8 }
+        : { id: categoryId };
+
       const response = await Axios({
-        ...SummaryApi.getProductByCategoryAndSubcategory,
-        data: {
-          categoryId: categoryId,
-          subcategoryId: subcategoryId,
-          page: page,
-          limit: 8,
-        },
+        ...apiEndpoint,
+        data: payload,
       });
 
       const { data: responseData } = response;
       if (responseData.success) {
-        if (responseData.page == 1) {
-          setData(responseData.data);
+        if (responseData.page == 1 || !subcategoryId) {
+          setData(responseData.data || []);
         } else {
-          setData([...data, ...responseData.data]);
+          setData([...data, ...(responseData.data || [])]);
         }
 
         setTotalPage(responseData.totalPage || 1);
@@ -61,8 +68,8 @@ const ProductListPage = () => {
 
   useEffect(() => {
     const sub = AllSubCategory.filter((s) => {
-      const filterData = s.category.some((el) => {
-        return el._id === categoryId;
+      const filterData = Array.isArray(s.category) && s.category.some((el) => {
+        return (el?._id || el) === categoryId;
       });
 
       return filterData ? filterData : null;
@@ -81,7 +88,7 @@ const ProductListPage = () => {
           {/* STICKY SUBCATEGORY HEADER */}
           <div className="sticky top-0 z-30 bg-white border-b  border-b-gray-200 px-4 py-3">
             <h3 className="font-semibold capitalize text-lg">
-              {subcategoryName || "Subcategory"}
+              {subcategoryName || categoryName || "Products"}
             </h3>
           </div>
 
