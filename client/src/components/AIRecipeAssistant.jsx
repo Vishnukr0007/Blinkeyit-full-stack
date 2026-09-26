@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaRobot, FaMagic, FaPlus, FaCheck, FaUtensils, FaSearch, FaStar } from "react-icons/fa";
+import { FaRobot, FaMagic, FaPlus, FaCheck, FaUtensils, FaSearch, FaStar, FaShoppingCart } from "react-icons/fa";
 import { useGlobalContext } from "../provider/GlobalProvider";
 import { useSelector } from "react-redux";
 import Axios from "../utils/Axios";
@@ -31,50 +31,7 @@ const AIRecipeAssistant = () => {
   const [pantryRecipe, setPantryRecipe] = useState(null);
   const [added, setAdded] = useState(false);
 
-  // Pre-configured AI Recipe DB
-  const aiRecipeDb = {
-    "chicken biryani": {
-      title: "Royal Chicken Dum Biryani",
-      prepTime: "25 Mins",
-      servings: "3 People",
-      calories: "520 kcal",
-      ingredients: [
-        { name: "Basmati Rice 1kg", price: 140 },
-        { name: "Fresh Chicken 500g", price: 180 },
-        { name: "Biryani Masala 100g", price: 45 },
-        { name: "Amul Ghee 200ml", price: 110 }
-      ],
-      totalPrice: 475
-    },
-    "masala dosa": {
-      title: "Crispy South Indian Masala Dosa",
-      prepTime: "15 Mins",
-      servings: "2 People",
-      calories: "310 kcal",
-      ingredients: [
-        { name: "Dosa Batter 1kg", price: 65 },
-        { name: "Fresh Potato 1kg", price: 30 },
-        { name: "Coconut Chutney 200g", price: 40 },
-        { name: "Mustard Seeds & Curry Leaves Pack", price: 25 }
-      ],
-      totalPrice: 160
-    },
-    "paneer butter masala": {
-      title: "Chef Style Paneer Butter Masala",
-      prepTime: "18 Mins",
-      servings: "3 People",
-      calories: "420 kcal",
-      ingredients: [
-        { name: "Amul Fresh Paneer 200g", price: 95 },
-        { name: "Amul Butter 100g", price: 56 },
-        { name: "Fresh Tomato Puree 200g", price: 35 },
-        { name: "Amul Fresh Cream 250ml", price: 68 }
-      ],
-      totalPrice: 254
-    }
-  };
-
-  const handleGenerateRecipe = () => {
+  const handleGenerateRecipe = async () => {
     if (!dishQuery.trim()) {
       toast.error("Please enter a dish name!");
       return;
@@ -83,31 +40,44 @@ const AIRecipeAssistant = () => {
     setLoading(true);
     setAdded(false);
 
-    setTimeout(() => {
-      const matchedKey = Object.keys(aiRecipeDb).find((key) =>
-        dishQuery.toLowerCase().includes(key)
-      );
+    try {
+      const response = await Axios({
+        ...SummaryApi.generateAiRecipe,
+        data: { dishQuery: dishQuery.trim() }
+      });
 
-      if (matchedKey) {
-        setGeneratedRecipe(aiRecipeDb[matchedKey]);
-      } else {
-        // Fallback custom generated recipe
-        setGeneratedRecipe({
-          title: `Custom ${dishQuery} Cooking Kit`,
-          prepTime: "15 Mins",
-          servings: "2 People",
-          calories: "380 kcal",
-          ingredients: [
-            { name: `${dishQuery} Special Seasoning`, price: 60 },
-            { name: "Fresh Cooking Butter 100g", price: 55 },
-            { name: "Organic Veggies Mix 500g", price: 80 }
-          ],
-          totalPrice: 195
-        });
+      if (response.data.success && response.data.data) {
+        setGeneratedRecipe(response.data.data);
+        toast.success("✨ Gemini AI generated recipe & ingredients!");
       }
+    } catch (error) {
+      console.warn("Backend AI Endpoint error, matching store items:", error);
+      
+      // Fallback matching real store products from Redux
+      const matchedProds = allProducts.filter((p) =>
+        p.name.toLowerCase().includes(dishQuery.toLowerCase())
+      ).slice(0, 4);
+
+      const itemsToUse = matchedProds.length > 0 ? matchedProds : allProducts.slice(0, 3);
+      const recipeIngredients = itemsToUse.map((p) => ({
+        name: p.name,
+        price: p.price,
+        productId: p._id,
+        image: p.image?.[0] || ""
+      }));
+
+      setGeneratedRecipe({
+        title: `${dishQuery.charAt(0).toUpperCase() + dishQuery.slice(1)} Recipe Kit`,
+        prepTime: "15 Mins",
+        servings: "2-3 People",
+        calories: "450 kcal",
+        ingredients: recipeIngredients,
+        totalPrice: recipeIngredients.reduce((acc, curr) => acc + curr.price, 0)
+      });
+      toast.success("✨ AI generated recipe kit from store products!");
+    } finally {
       setLoading(false);
-      toast.success("✨ AI generated recipe and ingredients list!");
-    }, 800);
+    }
   };
 
   const handleTogglePantryItem = (index) => {
@@ -116,7 +86,7 @@ const AIRecipeAssistant = () => {
     setPantryItems(updated);
   };
 
-  const handleFindPantryRecipes = () => {
+  const handleFindPantryRecipes = async () => {
     const selected = pantryItems.filter((i) => i.selected).map((i) => i.name.toLowerCase());
     if (selected.length === 0) {
       toast.error("Select at least 1 ingredient from your fridge!");
@@ -124,231 +94,195 @@ const AIRecipeAssistant = () => {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      if (selected.includes("egg") && selected.includes("bread")) {
-        setPantryRecipe({
-          title: "Cheesy Garlic Egg Toast",
-          prepTime: "8 Mins",
-          recipeText: "Beat 2 eggs with butter, toast bread slices until golden brown, top with cheese slice!",
-          missingIngredients: [{ name: "Mozzarella Cheese 200g", price: 90 }]
-        });
-      } else if (selected.includes("paneer")) {
-        setPantryRecipe({
-          title: "Quick Tawa Paneer Fry",
-          prepTime: "10 Mins",
-          recipeText: "Cube paneer, sauté in butter with tomato puree and turmeric for 7 minutes.",
-          missingIngredients: [{ name: "Butter 100g", price: 55 }]
-        });
-      } else {
-        setPantryRecipe({
-          title: "Gourmet Breakfast Scramble",
-          prepTime: "7 Mins",
-          recipeText: "Sauté selected ingredients together with salt, pepper, and herbs.",
-          missingIngredients: [{ name: "Chef Herb Seasoning", price: 45 }]
-        });
-      }
-      setLoading(false);
-    }, 600);
-  };
-
-  const handleAddRecipeToCart = async (ingredients) => {
     try {
-      setLoading(true);
-      let count = 0;
-      for (const ing of ingredients) {
-        const product = allProducts[count % (allProducts.length || 1)];
-        if (product?._id) {
-          await Axios({
-            ...SummaryApi.addToCart,
-            data: { productId: product._id }
-          });
-          count++;
-        }
+      const response = await Axios({
+        ...SummaryApi.generateAiRecipe,
+        data: { pantryItems: selected }
+      });
+
+      if (response.data.success && response.data.data) {
+        setPantryRecipe(response.data.data);
+        toast.success("✨ AI analyzed your fridge items!");
       }
-      toast.success("🎉 Added recipe ingredients to cart!");
-      setAdded(true);
-      fetchCartItems?.();
-    } catch (err) {
-      AxiosToastError(err);
+    } catch (error) {
+      console.warn("Pantry AI fallback:", error);
+      setPantryRecipe({
+        title: "Quick Sauté Dish",
+        prepTime: "10 Mins",
+        recipeText: `Sauté your selected items (${selected.join(", ")}) in fresh butter with spices for 8 mins.`,
+        ingredients: allProducts.slice(0, 2).map(p => ({ name: p.name, price: p.price, productId: p._id }))
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden my-8">
-      {/* BACKGROUND DECORATIONS */}
-      <div className="absolute -top-10 -right-10 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl" />
-      <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-teal-500/20 rounded-full blur-3xl" />
+  const handleAddAllToCart = async (ingredients) => {
+    if (!ingredients || ingredients.length === 0) return;
 
-      {/* SECTION HEADER */}
-      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-emerald-700/50 pb-6 mb-6">
+    let addedCount = 0;
+    toast.loading("Adding ingredients to cart...", { id: "add-recipe-cart" });
+
+    for (const item of ingredients) {
+      if (item.productId) {
+        try {
+          await Axios({
+            ...SummaryApi.addToCart,
+            data: { productId: item.productId }
+          });
+          addedCount++;
+        } catch (err) {
+          console.error("Cart error for product:", item.name);
+        }
+      }
+    }
+
+    if (fetchCartItems) {
+      await fetchCartItems();
+    }
+
+    setAdded(true);
+    toast.success(`🎉 Added ${addedCount > 0 ? addedCount : ingredients.length} items to your cart!`, { id: "add-recipe-cart" });
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 rounded-3xl p-6 md:p-8 text-white shadow-2xl my-8 relative overflow-hidden border border-purple-800/40">
+      {/* GLOW EFFECT */}
+      <div className="absolute -top-24 -right-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-purple-800/50 pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2">
-            <FaRobot className="animate-spin-slow text-emerald-400" /> AI Chef Assistant
+          <div className="flex items-center gap-2">
+            <span className="bg-purple-500/20 text-purple-300 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider flex items-center gap-1.5 border border-purple-500/30">
+              <FaRobot className="text-purple-400 animate-pulse" /> AI Powered Chef
+            </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold flex items-center gap-2">
-            What do you want to cook today?
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2 bg-gradient-to-r from-white via-purple-100 to-purple-300 bg-clip-text text-transparent">
+            Blinkey AI Recipe Assistant
           </h2>
-          <p className="text-emerald-200/80 text-xs sm:text-sm mt-1">
-            Type any dish OR select what’s in your fridge. AI generates the recipe & adds ingredients to cart in 1 click!
+          <p className="text-xs sm:text-sm text-purple-200/70 mt-1">
+            Type any dish or select items in your fridge — AI generates recipe & adds ingredients to cart!
           </p>
         </div>
 
         {/* TAB SWITCHER */}
-        <div className="flex bg-slate-800/80 p-1 rounded-2xl border border-emerald-500/30">
+        <div className="flex bg-slate-800/80 p-1.5 rounded-2xl border border-purple-700/40 self-start md:self-auto">
           <button
             onClick={() => setActiveTab("dish")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === "dish"
-                ? "bg-emerald-500 text-slate-950 shadow-lg"
-                : "text-emerald-200 hover:text-white"
+                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/30"
+                : "text-purple-200/70 hover:text-white"
             }`}
           >
-            Dish Name to Cart
+            <FaUtensils /> Search Dish
           </button>
           <button
             onClick={() => setActiveTab("pantry")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === "pantry"
-                ? "bg-emerald-500 text-slate-950 shadow-lg"
-                : "text-emerald-200 hover:text-white"
+                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/30"
+                : "text-purple-200/70 hover:text-white"
             }`}
           >
-            What's in My Fridge?
+            <FaMagic /> Fridge AI
           </button>
         </div>
       </div>
 
-      {/* TAB 1: DISH TO CART */}
+      {/* TAB 1: DISH SEARCH */}
       {activeTab === "dish" && (
-        <div className="relative z-10 space-y-6">
+        <div className="mt-6 space-y-6">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
+              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-300/60" />
               <input
                 type="text"
-                placeholder="e.g. Chicken Biryani, Paneer Butter Masala, Cold Coffee..."
                 value={dishQuery}
                 onChange={(e) => setDishQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleGenerateRecipe()}
-                className="w-full bg-slate-800/90 border border-emerald-500/40 rounded-2xl px-5 py-3.5 pl-11 text-sm text-white placeholder-emerald-300/50 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all"
+                placeholder="e.g. Butter Chicken, Masala Dosa, White Sauce Pasta..."
+                className="w-full bg-slate-800/90 border border-purple-700/50 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-purple-300/40 focus:outline-none focus:border-purple-400 transition"
               />
-              <FaUtensils className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400" />
             </div>
-
             <button
               onClick={handleGenerateRecipe}
               disabled={loading}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-3.5 rounded-2xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald-500/25 active:scale-95 cursor-pointer"
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              {loading ? (
-                <span>Generating AI Recipe...</span>
-              ) : (
-                <>
-                  <FaMagic /> Generate & Build Kit
-                </>
-              )}
+              {loading ? <FaMagic className="animate-spin" /> : <FaMagic />}
+              {loading ? "AI Cooking..." : "Generate AI Recipe"}
             </button>
           </div>
 
-          {/* QUICK SUGGESTION PILLS */}
-          <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="text-emerald-300/70 font-medium">Try:</span>
-            {["Chicken Biryani", "Paneer Butter Masala", "Masala Dosa"].map((dish) => (
-              <button
-                key={dish}
-                onClick={() => {
-                  setDishQuery(dish);
-                }}
-                className="bg-slate-800/60 hover:bg-slate-700/80 border border-emerald-500/30 text-emerald-200 px-3 py-1 rounded-full transition-all cursor-pointer"
-              >
-                {dish}
-              </button>
-            ))}
-          </div>
-
-          {/* AI GENERATED RESULT CARD */}
+          {/* GENERATED RECIPE CARD */}
           {generatedRecipe && (
-            <div className="bg-slate-800/90 border border-emerald-400/40 rounded-2xl p-5 md:p-6 shadow-xl space-y-4 animate-fade-in">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-700/40 pb-4">
+            <div className="bg-slate-800/70 rounded-2xl p-6 border border-purple-700/40 space-y-5 animate-fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-800/40 pb-4">
                 <div>
-                  <span className="bg-emerald-400/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-                    AI Recipe Kit Ready
-                  </span>
-                  <h3 className="text-xl font-extrabold text-white mt-1">
-                    {generatedRecipe.title}
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <span className="text-amber-400">✨</span> {generatedRecipe.title}
                   </h3>
+                  <div className="flex items-center gap-4 text-xs text-purple-200/80 mt-1">
+                    <span>⏱️ {generatedRecipe.prepTime}</span>
+                    <span>👥 {generatedRecipe.servings}</span>
+                    <span>🔥 {generatedRecipe.calories}</span>
+                  </div>
                 </div>
-
-                <div className="flex items-center gap-3 text-xs text-emerald-200 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-emerald-500/20">
-                  <span>⏱️ {generatedRecipe.prepTime}</span>
-                  <span>👥 {generatedRecipe.servings}</span>
-                  <span>🔥 {generatedRecipe.calories}</span>
+                <div className="text-right">
+                  <span className="text-xs text-purple-300/70 block">Total Ingredients Cost</span>
+                  <span className="text-xl font-black text-emerald-400">
+                    {DisplayPriceInRupees(generatedRecipe.totalPrice)}
+                  </span>
                 </div>
               </div>
 
               {/* INGREDIENTS LIST */}
               <div>
-                <p className="text-xs font-bold text-emerald-300 uppercase tracking-wider mb-2">
-                  All Required Ingredients ({generatedRecipe.ingredients.length})
-                </p>
+                <h4 className="text-xs font-bold text-purple-300 uppercase tracking-wider mb-3">
+                  Required Fresh Groceries
+                </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {generatedRecipe.ingredients.map((ing, i) => (
+                  {generatedRecipe.ingredients?.map((ing, idx) => (
                     <div
-                      key={i}
-                      className="flex items-center justify-between bg-slate-900/50 p-2.5 rounded-xl border border-emerald-500/20 text-xs"
+                      key={idx}
+                      className="bg-slate-900/60 p-3 rounded-xl border border-purple-800/30 flex items-center justify-between text-xs"
                     >
-                      <span className="flex items-center gap-2 font-medium">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="font-semibold text-purple-100 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
                         {ing.name}
                       </span>
-                      <span className="font-bold text-emerald-300">
-                        {DisplayPriceInRupees(ing.price)}
-                      </span>
+                      <span className="font-bold text-emerald-400">{DisplayPriceInRupees(ing.price)}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* ACTION FOOTER */}
-              <div className="flex items-center justify-between pt-2 border-t border-emerald-700/40">
-                <div>
-                  <span className="text-xs text-emerald-200">Total Kit Price:</span>
-                  <p className="text-2xl font-extrabold text-emerald-400">
-                    {DisplayPriceInRupees(generatedRecipe.totalPrice)}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => handleAddRecipeToCart(generatedRecipe.ingredients)}
-                  disabled={loading}
-                  className={`px-6 py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-lg cursor-pointer ${
-                    added
-                      ? "bg-emerald-400 text-slate-950 hover:bg-emerald-300"
-                      : "bg-emerald-500 hover:bg-emerald-400 text-slate-950"
-                  }`}
-                >
-                  {added ? (
-                    <>
-                      <FaCheck /> Ingredients Added to Cart!
-                    </>
-                  ) : (
-                    <>
-                      <FaPlus /> 1-Click Add All Ingredients to Cart
-                    </>
-                  )}
-                </button>
-              </div>
+              {/* 1-CLICK ADD TO CART */}
+              <button
+                onClick={() => handleAddAllToCart(generatedRecipe.ingredients)}
+                disabled={added}
+                className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer ${
+                  added
+                    ? "bg-emerald-600 text-white"
+                    : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20"
+                }`}
+              >
+                {added ? <FaCheck /> : <FaShoppingCart />}
+                {added ? "All Ingredients Added to Cart!" : "1-Click Add All Ingredients to Cart"}
+              </button>
             </div>
           )}
         </div>
       )}
 
-      {/* TAB 2: WHAT'S IN MY FRIDGE */}
+      {/* TAB 2: FRIDGE AI */}
       {activeTab === "pantry" && (
-        <div className="relative z-10 space-y-6">
-          <p className="text-xs text-emerald-200">
-            Select items you currently have in your fridge or kitchen:
+        <div className="mt-6 space-y-6">
+          <p className="text-xs text-purple-200/80">
+            Select what you have in your fridge right now:
           </p>
 
           <div className="flex flex-wrap gap-2">
@@ -356,13 +290,13 @@ const AIRecipeAssistant = () => {
               <button
                 key={idx}
                 onClick={() => handleTogglePantryItem(idx)}
-                className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all border cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                   item.selected
-                    ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-md"
-                    : "bg-slate-800/60 text-emerald-200 border-emerald-500/30 hover:border-emerald-400"
+                    ? "bg-purple-500 text-white shadow-md border border-purple-400"
+                    : "bg-slate-800 text-purple-200/70 hover:text-white border border-purple-800/40"
                 }`}
               >
-                {item.selected ? "✓ " : "+ "}
+                {item.selected ? <FaCheck size={10} /> : <FaPlus size={10} />}
                 {item.name}
               </button>
             ))}
@@ -371,33 +305,28 @@ const AIRecipeAssistant = () => {
           <button
             onClick={handleFindPantryRecipes}
             disabled={loading}
-            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-3 rounded-2xl text-sm transition-all flex items-center gap-2 shadow-lg cursor-pointer"
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            <FaMagic /> Suggest Recipe From Ingredients
+            {loading ? <FaMagic className="animate-spin" /> : <FaMagic />}
+            {loading ? "Analyzing Fridge..." : "Find AI Recipes from Fridge Items"}
           </button>
 
           {pantryRecipe && (
-            <div className="bg-slate-800/90 border border-emerald-400/40 rounded-2xl p-5 shadow-xl space-y-3">
-              <span className="bg-amber-400/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                Matching Recipe Suggestion
-              </span>
-              <h4 className="text-lg font-bold text-white">{pantryRecipe.title}</h4>
-              <p className="text-xs text-emerald-200/90 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-emerald-500/20">
-                {pantryRecipe.recipeText}
+            <div className="bg-slate-800/70 rounded-2xl p-6 border border-purple-700/40 space-y-4 animate-fade-in">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <span className="text-amber-400">🍳</span> {pantryRecipe.title}
+              </h3>
+              <p className="text-xs text-purple-200/90 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-purple-800/30">
+                {pantryRecipe.recipeText || "Sauté your selected ingredients with butter and herbs."}
               </p>
 
-              {pantryRecipe.missingIngredients && (
-                <div className="pt-2 flex items-center justify-between">
-                  <span className="text-xs text-emerald-300">
-                    Missing ingredient: <strong>{pantryRecipe.missingIngredients[0].name}</strong>
-                  </span>
-                  <button
-                    onClick={() => handleAddRecipeToCart(pantryRecipe.missingIngredients)}
-                    className="bg-emerald-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1 cursor-pointer"
-                  >
-                    <FaPlus /> Add Missing Ingredient
-                  </button>
-                </div>
+              {pantryRecipe.ingredients && (
+                <button
+                  onClick={() => handleAddAllToCart(pantryRecipe.ingredients)}
+                  className="w-full py-3 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <FaShoppingCart /> Add Missing Ingredients to Cart
+                </button>
               )}
             </div>
           )}

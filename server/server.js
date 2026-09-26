@@ -15,10 +15,9 @@ import cartRouter from "./route/cart.route.js";
 import addressRouter from "./route/address.route.js";
 import giftCardRouter from "./route/giftCard.route.js";
 import orderRouter from "./route/order.route.js";
+import aiRouter from "./route/ai.route.js";
 import { webhookStripe } from "./controllers/order.controller.js";
 import bodyParser from "body-parser";
-
-
 
 const app = express();
 
@@ -72,6 +71,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/gift-card", giftCardRouter);
+app.use("/api/ai", aiRouter);
 
 /* -------------------- ROOT ROUTE (FIX Cannot GET /) -------------------- */
 app.get("/", (req, res) => {

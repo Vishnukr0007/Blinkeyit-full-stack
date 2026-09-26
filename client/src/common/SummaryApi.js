@@ -185,11 +185,23 @@ const SummaryApi={
     updateOrderStatus : {
         url : "/api/order/update-order-status",
         method : 'post'
+    },
+    generateAiRecipe : {
+        url : "/api/ai/recipe",
+        method : 'post'
+    },
+    generateAiBudget : {
+        url : "/api/ai/budget-plan",
+        method : 'post'
+    },
+    aiChat : {
+        url : "/api/ai/chat",
+        method : 'post'
+    },
+    aiVisualSearch : {
+        url : "/api/ai/visual-search",
+        method : 'post'
     }
-    
-    
-    
-   
 }
 
 export default SummaryApi
