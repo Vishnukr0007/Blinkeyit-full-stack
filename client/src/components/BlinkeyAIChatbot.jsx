@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { FaRobot, FaPaperPlane, FaTimes, FaMicrophone, FaShoppingCart, FaPlus, FaCheck } from "react-icons/fa";
+import { FaRobot, FaPaperPlane, FaTimes, FaMicrophone, FaPlus } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import { useGlobalContext } from "../provider/GlobalProvider";
@@ -7,7 +8,8 @@ import toast from "react-hot-toast";
 import { DisplayPriceInRupees } from "../utils/DisplayPriceInRupees";
 
 const BlinkeyAIChatbot = () => {
-  const { fetchCartItems } = useGlobalContext();
+  const { fetchCartItems, totalQty } = useGlobalContext();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -27,6 +29,11 @@ const BlinkeyAIChatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isOpen]);
+
+  // Hide chatbot on cart and checkout pages to avoid interrupting checkout
+  if (location.pathname === "/cart" || location.pathname === "/checkout") {
+    return null;
+  }
 
   const handleSendMessage = async (e) => {
     e?.preventDefault();
@@ -118,31 +125,34 @@ const BlinkeyAIChatbot = () => {
     }
   };
 
+  // Dynamic positioning to prevent overlapping with mobile cart bar
+  const bottomPositionClass = totalQty > 0 ? "bottom-20 lg:bottom-6" : "bottom-6";
+
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className={`fixed ${bottomPositionClass} right-4 lg:right-6 z-40 transition-all duration-300`}>
       {/* FLOATING TRIGGER BUTTON */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="group bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:scale-105 text-white p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-3 cursor-pointer border-2 border-emerald-300/40 animate-bounce"
+          className="group bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:scale-105 text-white p-3.5 sm:p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer border-2 border-emerald-300/40 animate-bounce"
         >
-          <FaRobot size={24} className="text-amber-300" />
-          <span className="font-extrabold text-sm hidden sm:inline pr-1">Blinkey AI</span>
-          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white animate-ping" />
+          <FaRobot size={22} className="text-amber-300" />
+          <span className="font-extrabold text-xs sm:text-sm hidden sm:inline pr-1">Blinkey AI</span>
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white animate-ping" />
         </button>
       )}
 
       {/* CHAT MODAL WINDOW */}
       {isOpen && (
-        <div className="bg-slate-950 text-white rounded-3xl border border-slate-800 shadow-2xl w-[92vw] sm:w-96 h-[520px] flex flex-col overflow-hidden animate-fade-in">
+        <div className="bg-slate-950 text-white rounded-3xl border border-slate-800 shadow-2xl w-[90vw] sm:w-96 h-[480px] sm:h-[520px] flex flex-col overflow-hidden animate-fade-in">
           {/* HEADER */}
-          <div className="bg-gradient-to-r from-emerald-700 via-slate-900 to-indigo-900 p-4 flex items-center justify-between border-b border-slate-800">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-amber-300">
-                <FaRobot size={20} />
+          <div className="bg-gradient-to-r from-emerald-700 via-slate-900 to-indigo-900 p-3.5 sm:p-4 flex items-center justify-between border-b border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-amber-300">
+                <FaRobot size={18} />
               </div>
               <div>
-                <h3 className="font-extrabold text-sm text-white">Blinkey AI Shopping Agent</h3>
+                <h3 className="font-extrabold text-xs sm:text-sm text-white">Blinkey AI Shopping Agent</h3>
                 <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Assistant
                 </span>
@@ -151,14 +161,14 @@ const BlinkeyAIChatbot = () => {
 
             <button
               onClick={() => setIsOpen(false)}
-              className="text-slate-400 hover:text-white p-2 rounded-xl transition cursor-pointer"
+              className="text-slate-400 hover:text-white p-1.5 rounded-xl transition cursor-pointer"
             >
               <FaTimes size={16} />
             </button>
           </div>
 
           {/* MESSAGES CONTAINER */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
+          <div className="flex-1 overflow-y-auto p-3.5 space-y-3 text-xs">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -220,7 +230,7 @@ const BlinkeyAIChatbot = () => {
           </div>
 
           {/* INPUT BAR */}
-          <form onSubmit={handleSendMessage} className="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+          <form onSubmit={handleSendMessage} className="p-2.5 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
             <button
               type="button"
               onClick={handleVoiceInput}
@@ -237,13 +247,13 @@ const BlinkeyAIChatbot = () => {
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
               placeholder="Ask Blinkey AI..."
-              className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
             />
 
             <button
               type="submit"
               disabled={loading || !inputMsg.trim()}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 p-2.5 rounded-xl font-bold transition disabled:opacity-40 cursor-pointer"
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 p-2 rounded-xl font-bold transition disabled:opacity-40 cursor-pointer"
             >
               <FaPaperPlane size={13} />
             </button>
