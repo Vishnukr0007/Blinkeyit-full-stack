@@ -129,7 +129,7 @@ const BlinkeyAIChatbot = () => {
   const bottomPositionClass = totalQty > 0 ? "bottom-20 lg:bottom-6" : "bottom-6";
 
   return (
-    <div className={`fixed ${bottomPositionClass} right-4 lg:right-6 z-40 transition-all duration-300`}>
+    <div className={`fixed ${bottomPositionClass} left-4 lg:left-6 z-40 transition-all duration-300`}>
       {/* FLOATING TRIGGER BUTTON */}
       {!isOpen && (
         <button
