@@ -201,6 +201,22 @@ const SummaryApi={
     aiVisualSearch : {
         url : "/api/ai/visual-search",
         method : 'post'
+    },
+    createRecipe : {
+        url : "/api/recipe/create",
+        method : 'post'
+    },
+    getRecipe : {
+        url : "/api/recipe/get",
+        method : 'get'
+    },
+    updateRecipe : {
+        url : "/api/recipe/update",
+        method : 'put'
+    },
+    deleteRecipe : {
+        url : "/api/recipe/delete",
+        method : 'delete'
     }
 }
 

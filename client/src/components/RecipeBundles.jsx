@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaClock, FaFire, FaUtensils, FaPlus, FaCheck } from "react-icons/fa";
 import { useGlobalContext } from "../provider/GlobalProvider";
 import { useSelector } from "react-redux";
@@ -10,7 +10,7 @@ import { DisplayPriceInRupees } from "../utils/DisplayPriceInRupees";
 
 const sampleRecipes = [
   {
-    id: "recipe-1",
+    _id: "recipe-1",
     title: "Paneer Butter Masala Kit",
     time: "15 mins",
     difficulty: "Easy",
@@ -20,7 +20,6 @@ const sampleRecipes = [
     description: "Rich, creamy cottage cheese curry in tomato gravy. All fresh ingredients included!",
     originalPrice: 280,
     price: 220,
-    ingredientsCount: 4,
     ingredients: [
       "Fresh Amul Paneer 200g",
       "Amul Butter 100g",
@@ -29,7 +28,7 @@ const sampleRecipes = [
     ]
   },
   {
-    id: "recipe-2",
+    _id: "recipe-2",
     title: "Creamy Italian White Sauce Pasta",
     time: "12 mins",
     difficulty: "Quick",
@@ -39,7 +38,6 @@ const sampleRecipes = [
     description: "Cheesy penne pasta with garlic butter, mixed herbs, and rich mozzarella.",
     originalPrice: 240,
     price: 185,
-    ingredientsCount: 4,
     ingredients: [
       "Penne Pasta 500g",
       "Processed Cheese Block 200g",
@@ -48,7 +46,7 @@ const sampleRecipes = [
     ]
   },
   {
-    id: "recipe-3",
+    _id: "recipe-3",
     title: "Instant Cafe-Style Cold Coffee",
     time: "5 mins",
     difficulty: "Super Fast",
@@ -58,7 +56,6 @@ const sampleRecipes = [
     description: "Frothy thick chilled coffee topped with chocolate syrup and vanilla ice cream.",
     originalPrice: 160,
     price: 125,
-    ingredientsCount: 3,
     ingredients: [
       "Full Cream Milk 1L",
       "Nescafe Classic Coffee 50g",
@@ -70,19 +67,48 @@ const sampleRecipes = [
 const RecipeBundles = () => {
   const { fetchCartItems } = useGlobalContext();
   const allProducts = useSelector((state) => state.product.allProduct || []);
+  const [recipesList, setRecipesList] = useState([]);
+  const [loadingRecipes, setLoadingRecipes] = useState(false);
   const [addingId, setAddingId] = useState(null);
   const [addedIds, setAddedIds] = useState([]);
 
-  const handleAddBundleToCart = async (recipe) => {
+  const fetchBackendRecipes = async () => {
     try {
-      setAddingId(recipe.id);
+      setLoadingRecipes(true);
+      const response = await Axios({
+        ...SummaryApi.getRecipe,
+        params: { publishedOnly: "true" }
+      });
+      const { data: responseData } = response;
+      if (responseData.success && responseData.data?.length > 0) {
+        setRecipesList(responseData.data);
+      } else {
+        setRecipesList(sampleRecipes);
+      }
+    } catch (error) {
+      console.warn("Failed to load recipes from backend, using default samples:", error);
+      setRecipesList(sampleRecipes);
+    } finally {
+      setLoadingRecipes(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBackendRecipes();
+  }, []);
+
+  const handleAddBundleToCart = async (recipe) => {
+    const recipeId = recipe._id || recipe.id;
+    try {
+      setAddingId(recipeId);
 
       // Find matching products in store or add symbolic bundle items
       let addedCount = 0;
-      for (const ingredientName of recipe.ingredients) {
-        // Try to match product by name or grab available product
+      const ingredients = recipe.ingredients || [];
+      for (const ingredientName of ingredients) {
+        const queryTerm = typeof ingredientName === "string" ? ingredientName.split(" ")[0].toLowerCase() : "";
         const matchedProduct = allProducts.find((p) =>
-          p.name.toLowerCase().includes(ingredientName.split(" ")[0].toLowerCase())
+          p.name.toLowerCase().includes(queryTerm)
         ) || allProducts[addedCount % (allProducts.length || 1)];
 
         if (matchedProduct?._id) {
@@ -95,7 +121,7 @@ const RecipeBundles = () => {
       }
 
       toast.success(`🎉 Added all ingredients for ${recipe.title} to cart!`);
-      setAddedIds((prev) => [...prev, recipe.id]);
+      setAddedIds((prev) => [...prev, recipeId]);
       fetchCartItems?.();
     } catch (error) {
       AxiosToastError(error);
@@ -103,6 +129,8 @@ const RecipeBundles = () => {
       setAddingId(null);
     }
   };
+
+  const displayRecipes = recipesList.length > 0 ? recipesList : sampleRecipes;
 
   return (
     <section className="my-8 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -128,13 +156,15 @@ const RecipeBundles = () => {
 
       {/* RECIPE CARDS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {sampleRecipes.map((recipe) => {
-          const isAdded = addedIds.includes(recipe.id);
-          const isAdding = addingId === recipe.id;
+        {displayRecipes.map((recipe) => {
+          const recipeId = recipe._id || recipe.id;
+          const isAdded = addedIds.includes(recipeId);
+          const isAdding = addingId === recipeId;
+          const ingredients = recipe.ingredients || [];
 
           return (
             <div
-              key={recipe.id}
+              key={recipeId}
               className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group relative"
             >
               {/* IMAGE HEADER */}
@@ -146,16 +176,18 @@ const RecipeBundles = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 
-                <span className="absolute top-3 left-3 bg-green-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
-                  {recipe.tag}
-                </span>
+                {recipe.tag && (
+                  <span className="absolute top-3 left-3 bg-green-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
+                    {recipe.tag}
+                  </span>
+                )}
 
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
                   <span className="flex items-center gap-1 font-medium bg-black/40 backdrop-blur-md px-2 py-1 rounded-md">
-                    <FaClock className="text-amber-400" /> {recipe.time}
+                    <FaClock className="text-amber-400" /> {recipe.time || "15 mins"}
                   </span>
                   <span className="flex items-center gap-1 font-medium bg-black/40 backdrop-blur-md px-2 py-1 rounded-md">
-                    <FaFire className="text-orange-400" /> {recipe.difficulty}
+                    <FaFire className="text-orange-400" /> {recipe.difficulty || "Easy"}
                   </span>
                 </div>
               </div>
@@ -173,11 +205,11 @@ const RecipeBundles = () => {
                   {/* INGREDIENTS LIST PREVIEW */}
                   <div className="mt-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
                     <p className="text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                      <span>Ingredients Included ({recipe.ingredientsCount})</span>
+                      <span>Ingredients Included ({ingredients.length})</span>
                       <span className="text-green-600 font-semibold lowercase">fresh</span>
                     </p>
                     <ul className="grid grid-cols-2 gap-1 text-[11px] text-gray-600">
-                      {recipe.ingredients.map((item, idx) => (
+                      {ingredients.map((item, idx) => (
                         <li key={idx} className="truncate flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
                           {item}
@@ -194,13 +226,17 @@ const RecipeBundles = () => {
                       <span className="text-lg font-extrabold text-gray-900">
                         {DisplayPriceInRupees(recipe.price)}
                       </span>
-                      <span className="text-xs text-gray-400 line-through">
-                        {DisplayPriceInRupees(recipe.originalPrice)}
-                      </span>
+                      {recipe.originalPrice > recipe.price && (
+                        <span className="text-xs text-gray-400 line-through">
+                          {DisplayPriceInRupees(recipe.originalPrice)}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-[10px] text-green-700 font-semibold">
-                      Save {DisplayPriceInRupees(recipe.originalPrice - recipe.price)}
-                    </p>
+                    {recipe.originalPrice > recipe.price && (
+                      <p className="text-[10px] text-green-700 font-semibold">
+                        Save {DisplayPriceInRupees(recipe.originalPrice - recipe.price)}
+                      </p>
+                    )}
                   </div>
 
                   <button

@@ -83,6 +83,12 @@ const UserMenu = ({closeMenu}) => {
        }
        {
         isAdmin(user.role)&& (
+          <Link onClick={handleClose} to={"/dashboard/recipes"} className='hover:bg-gray-100  py-1 cursor-pointer'>Recipe Kits</Link>
+          
+        )
+       }
+       {
+        isAdmin(user.role)&& (
           <Link onClick={handleClose} to={"/dashboard/manage-gift-cards"} className='hover:bg-gray-100  py-1 cursor-pointer'>Manage Gift Cards</Link>
           
         )
