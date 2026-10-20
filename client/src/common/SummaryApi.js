@@ -217,6 +217,67 @@ const SummaryApi={
     deleteRecipe : {
         url : "/api/recipe/delete",
         method : 'delete'
+    },
+    // Smart AI Grocery Planner Endpoints
+    generateAiGroceryPlan: {
+        url: "/api/grocery-plan/generate",
+        method: "post"
+    },
+    getGroceryTemplates: {
+        url: "/api/grocery-plan/templates",
+        method: "get"
+    },
+    getGroceryPlanDetails: {
+        url: "/api/grocery-plan/details",
+        method: "get"
+    },
+    useGroceryPlan: {
+        url: "/api/grocery-plan/use",
+        method: "post"
+    },
+    saveGroceryPlan: {
+        url: "/api/grocery-plan/save",
+        method: "post"
+    },
+    getMyGroceryPlans: {
+        url: "/api/grocery-plan/my-plans",
+        method: "get"
+    },
+    updateGroceryPlan: {
+        url: "/api/grocery-plan/update",
+        method: "put"
+    },
+    deleteGroceryPlan: {
+        url: "/api/grocery-plan/delete",
+        method: "delete"
+    },
+    adminGetGroceryStats: {
+        url: "/api/grocery-plan/admin/stats",
+        method: "get"
+    },
+    adminGetAllGroceryPlans: {
+        url: "/api/grocery-plan/admin/all",
+        method: "get"
+    },
+    adminCreateGroceryTemplate: {
+        url: "/api/grocery-plan/admin/template",
+        method: "post"
+    },
+    adminUpdateGroceryPlan: {
+        url: "/api/grocery-plan/admin/update",
+        method: "put"
+    },
+    adminDeleteGroceryPlan: {
+        url: "/api/grocery-plan/admin/delete",
+        method: "delete"
+    },
+    adminTogglePublishGroceryPlan: {
+        url: "/api/grocery-plan/admin/toggle-publish",
+        method: "patch"
+    },
+    adminToggleFeaturedGroceryPlan: {
+        url: "/api/grocery-plan/admin/toggle-featured",
+        method: "patch"
     }
 }
 

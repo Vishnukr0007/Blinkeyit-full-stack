@@ -30,6 +30,8 @@ import SuccessPage from "../pages/SuccessPage";
 import Cancel from "../pages/Cancel";
 import OrdersAdmin from "../pages/OrdersAdmin";
 import AllCategories from "../pages/AllCategories";
+import GroceryPlannerAdmin from "../pages/GroceryPlannerAdmin";
+import MyGroceryPlans from "../pages/MyGroceryPlans";
 
 
 const router = createBrowserRouter([
@@ -129,8 +131,15 @@ const router = createBrowserRouter([
           {
             path: "admin-orders",
             element: <AdminPermission><OrdersAdmin /></AdminPermission>
+          },
+          {
+            path: "grocery-planner-admin",
+            element: <AdminPermission><GroceryPlannerAdmin /></AdminPermission>
+          },
+          {
+            path: "my-grocery-plans",
+            element: <MyGroceryPlans />
           }
-
         ]
       },
       {

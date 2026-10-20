@@ -98,8 +98,17 @@ const UserMenu = ({closeMenu}) => {
             <Link onClick={handleClose} to={"/dashboard/admin-orders"} className='hover:bg-gray-100 py-1 cursor-pointer'>All Orders</Link>
           )
         }
+        {
+          isAdmin(user.role) && (
+            <Link onClick={handleClose} to={"/dashboard/grocery-planner-admin"} className='hover:bg-gray-100 py-1 cursor-pointer flex items-center justify-between text-emerald-800 font-bold'>
+              <span>AI Grocery Planner</span>
+              <span className='text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded-full'>AI</span>
+            </Link>
+          )
+        }
       
         <Link onClick={handleClose} to={"/dashboard/my-orders"} className='hover:bg-gray-100  py-1 cursor-pointer'>My Orders</Link>
+        <Link onClick={handleClose} to={"/dashboard/my-grocery-plans"} className='hover:bg-gray-100 py-1 cursor-pointer text-emerald-700 font-semibold'>My Saved Grocery Plans</Link>
         <Link onClick={handleClose} to={"/dashboard/address"} className='hover:bg-gray-100   py-1 cursor-pointer'>Save Address</Link>
         {
           !isAdmin(user.role) && (

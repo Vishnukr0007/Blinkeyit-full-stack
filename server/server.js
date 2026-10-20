@@ -17,6 +17,7 @@ import giftCardRouter from "./route/giftCard.route.js";
 import orderRouter from "./route/order.route.js";
 import aiRouter from "./route/ai.route.js";
 import recipeRouter from "./route/recipe.route.js";
+import groceryPlanRouter from "./route/groceryPlan.route.js";
 import { webhookStripe } from "./controllers/order.controller.js";
 import bodyParser from "body-parser";
 
@@ -74,6 +75,7 @@ app.use("/api/order", orderRouter);
 app.use("/api/gift-card", giftCardRouter);
 app.use("/api/ai", aiRouter);
 app.use("/api/recipe", recipeRouter);
+app.use("/api/grocery-plan", groceryPlanRouter);
 
 /* -------------------- ROOT ROUTE (FIX Cannot GET /) -------------------- */
 app.get("/", (req, res) => {
