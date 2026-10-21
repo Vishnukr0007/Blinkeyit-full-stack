@@ -13,19 +13,19 @@ export async function registerUserController(req,res){
     try{
         const {name,email,password}=req.body
 
-        if(!name|| !email||!password){
+        if(!name || !email || !password){
             return res.status(400).json({
-                message:"provided email,name,password",
+                message:"Please provide your name, email, and password",
                 error:true,
                 success:false
-                
             })
         }
 
-        const user=await UserModel.findOne({email})
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await UserModel.findOne({ email: normalizedEmail })
         if(user){
-            return res.json({
-                message:"Already register email",
+            return res.status(409).json({
+                message:"An account with this email address already exists.",
                 error: true,
                 success:false
             })
@@ -34,8 +34,8 @@ export async function registerUserController(req,res){
       const salt=await bcryptjs.genSalt(10)
       const hashPassword=await bcryptjs.hash(password,salt)
       const payload={
-        name,
-        email,
+        name: name.trim(),
+        email: normalizedEmail,
         password:hashPassword
       }
 
@@ -43,25 +43,30 @@ export async function registerUserController(req,res){
       const save=await newUser.save()
        const VerifyEmaiUrl=`${process.env.FRONTEND_URL}/verify-email?code=${save._id}`// verify Email
       const verifyEmail=await sendEmail({
-           sendTo :email,
-           subject:"verify email from blinkeyit",
+           sendTo :normalizedEmail,
+           subject:"Verify your email address - Blinkeyit",
            html:verifyEmailTemplate({
               name,
               Url:VerifyEmaiUrl
            })
-
       })
-      return res.json({
-        message: " User register successfully",
+      return res.status(201).json({
+        message: "Account created successfully",
         error:false,
         success: true,
         data : save
-
       })
 
     }catch(error){
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message:"An account with this email address already exists.",
+                error:true,
+                success:false
+            })
+        }
         return res.status(500).json({
-            message:error.message||error,
+            message:error.message || "Failed to register account",
             error:true,
             success:false
         })
@@ -112,25 +117,26 @@ export async function verifyEmailcontroller(req,res){
 export async function loginController(req,res) {
     try {
         const {email,password}=req.body
-         if(!email|| !password){
+         if(!email || !password){
             return res.status(400).json({
-                message:"provide email,password",
+                message:"Please provide both email and password",
                 error:true,
                 success:false
             })
          }
 
-        const user=await UserModel.findOne({email})
+        const normalizedEmail = email.toLowerCase().trim();
+        const user=await UserModel.findOne({email: normalizedEmail})
         if(!user){
             return res.status(400).json({
-              message:"user not registered",
+              message:"No account found with this email address",
               error:true,
               success:false
             })
         }
         if(user.status !=="Active"){
-            return res.status(400).json({
-                message:"contact to admin",
+            return res.status(403).json({
+                message:"Your account is suspended. Please contact customer support.",
                 error:true,
                 success:false
             })
@@ -138,7 +144,7 @@ export async function loginController(req,res) {
         const checkPassword=await bcryptjs.compare(password,user.password)
     if(!checkPassword){
         return res.status(400).json({
-            message:"check the password",
+            message:"Incorrect password. Please try again.",
             error:true,
             success:false
         })

@@ -282,9 +282,16 @@ export const searchProduct = async (req, res) => {
     page = Number(page);
     limit = Number(limit);
 
-    const query = search
+    const cleanSearch = (search || "").trim();
+    const escapedSearch = cleanSearch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const query = cleanSearch
       ? {
-          $text: { $search: search },
+          $or: [
+            { name: { $regex: escapedSearch, $options: "i" } },
+            { description: { $regex: escapedSearch, $options: "i" } },
+            { unit: { $regex: escapedSearch, $options: "i" } },
+          ],
         }
       : {};
 

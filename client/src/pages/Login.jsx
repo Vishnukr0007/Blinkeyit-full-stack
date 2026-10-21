@@ -4,22 +4,25 @@ import toast from "react-hot-toast";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import AxiosToastError from "../utils/AxiosToastError";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import fetchUserDetails from "../utils/fetchUserDetails";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../store/userSlice";
+import ButtonLoader from "../components/ButtonLoader";
+
 const Login = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const dispatch=useDispatch()
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-  // Validate if all fields are filled
-  const isFormValid = Object.values(data).every((el) => el.trim() !== "");
+  const isFormValid = Boolean(data.email.trim() && data.password.trim());
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,96 +34,133 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid || loading) return;
 
     try {
+      setLoading(true);
       const response = await Axios({
         ...SummaryApi.login,
         data: data,
       });
 
       if (response.data.error) {
-        toast.error(response.data.message);
+        toast.error(response.data.message || "Invalid credentials");
       } else if (response.data.success) {
-        toast.success(response.data.message);
-        localStorage.setItem("accesstoken",response.data.data.accesstoken)
-        localStorage.setItem("refreshtoken",response.data.data.refreshtoken)
-        const userDetails =await fetchUserDetails()
-         dispatch(setUserDetails(userDetails.data))
+        toast.success(response.data.message || "Logged in successfully!");
+        if (response.data.data?.accesstoken) {
+          localStorage.setItem("accesstoken", response.data.data.accesstoken);
+        }
+        if (response.data.data?.refreshtoken) {
+          localStorage.setItem("refreshtoken", response.data.data.refreshtoken);
+        }
 
-         
+        const userDetails = await fetchUserDetails();
+        if (userDetails?.data) {
+          dispatch(setUserDetails(userDetails.data));
+        }
+
         setData({ email: "", password: "" });
-        navigate("/");
+
+        // Redirect back to intended page (e.g. /checkout) or home
+        const redirectTo = location.state?.redirectTo || "/";
+        navigate(redirectTo);
       }
     } catch (error) {
       AxiosToastError(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <section className="w-full container mx-auto px-4 flex justify-center items-center ">
-      <div className="bg-white my-4 w-full max-w-md shadow-lg rounded-2xl p-6">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
-          Indias Last Minute App
-        </h2>
+    <section className="w-full min-h-[75vh] container mx-auto px-4 flex justify-center items-center py-8">
+      <div className="bg-white w-full max-w-md shadow-md hover:shadow-lg border border-gray-100 rounded-3xl p-8 transition-shadow">
+        <div className="text-center mb-6">
+          <span className="text-2xl font-black text-green-700 tracking-tight">blinkey<span className="text-amber-500">it</span></span>
+          <h2 className="text-xl font-bold text-gray-900 mt-2">
+            Welcome Back!
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            India's favorite 10-minute grocery delivery app
+          </p>
+        </div>
 
         <form className="grid gap-4" onSubmit={handleSubmit}>
           {/* Email Field */}
-          <div className="grid">
-            <label className="text-gray-700 font-medium" htmlFor="email">
-              Email
+          <div className="grid gap-1">
+            <label className="text-xs font-semibold text-gray-700" htmlFor="email">
+              Email Address
             </label>
             <input
-            type="email"
-            placeholder="Enter your email"
-            id="email"
-            name="email"
-            className="border rounded-lg p-2 focus:outline-none  focus:border-yellow-500"
-            value={data.email}
-            onChange={handleChange}
+              type="email"
+              placeholder="e.g. rahul@example.com"
+              id="email"
+              name="email"
+              autoComplete="email"
+              className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 transition"
+              value={data.email}
+              onChange={handleChange}
+              required
             />
-
           </div>
 
           {/* Password Field */}
-          <div className="grid">
-            <label className="text-gray-700 font-medium" htmlFor="password">
-              Password
-            </label>
-            <div className="flex items-center border rounded-lg p-2  focus-within:border-yellow-500">
+          <div className="grid gap-1">
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-semibold text-gray-700" htmlFor="password">
+                Password
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-xs text-green-700 hover:text-green-800 hover:underline cursor-pointer"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="flex items-center border border-gray-200 rounded-xl px-3.5 py-2.5 focus-within:border-green-600 focus-within:ring-2 focus-within:ring-green-100 transition">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 id="password"
                 name="password"
-                className="w-full focus:outline-none"
+                autoComplete="current-password"
+                className="w-full focus:outline-none text-sm bg-transparent"
                 value={data.password}
                 onChange={handleChange}
+                required
               />
-              <div
+              <button
+                type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="cursor-pointer text-gray-600 ml-2"
+                className="cursor-pointer text-gray-400 hover:text-gray-600 ml-2"
+                title={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
-              </div>
+              </button>
             </div>
           </div>
-          <Link to={"/forgot-password"} className="block ml-auto hover:text-yellow-500 underline cursor-pointer">Forgot Password ?</Link>
 
           {/* Login Button */}
           <button
-            disabled={!isFormValid}
-            className={`${
-              isFormValid ? "bg-green-800 hover:bg-green-700 cursor-pointer" : "bg-gray-400 cursor-not-allowed"
-            } text-white py-2 rounded-lg transition-all`}
+            type="submit"
+            disabled={!isFormValid || loading}
+            className={`w-full py-3 rounded-xl font-bold text-sm transition-all duration-200 shadow-sm flex items-center justify-center mt-2 ${
+              isFormValid && !loading
+                ? "bg-green-700 hover:bg-green-800 text-white cursor-pointer active:scale-98"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
           >
-            Login
+            {loading ? <ButtonLoader /> : "Log In"}
           </button>
         </form>
 
-        <p className="text-center mt-3">
-          Don t have an account?{" "}
-          <Link to="/register" className="font-semibold text-green-800 cursor-pointer">
-            Register
+        <p className="text-center text-xs text-gray-600 mt-6">
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="font-bold text-green-700 hover:text-green-800 hover:underline cursor-pointer"
+          >
+            Create an Account
           </Link>
         </p>
       </div>

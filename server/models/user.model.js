@@ -6,24 +6,26 @@ import mongoose from "mongoose";
 const userSchema=new mongoose.Schema({
     name:{
         type:String,
-        required:[true,"provided name"],
-        unique:true
+        required:[true,"Please provide name"],
+        trim: true
     },
     email:{
         type:String,
-        required:[true,'provided email'],
-        unique:true
+        required:[true,'Please provide email'],
+        unique:true,
+        lowercase: true,
+        trim: true
     },
     password:{
         type:String,
-        required:[true,"provided password"]
+        required:[true,"Please provide password"]
     },
     avatar:{
         type:String,
         default :""
     },
     mobile:{
-        type:Number,
+        type:String,
         default:null
     },
     refresh_token:{
@@ -36,7 +38,7 @@ const userSchema=new mongoose.Schema({
     },
     last_login_date:{
         type :Date,
-        default:""
+        default:null
     },status :{
         type:String,
         enum:['Active',"Inactive","Suspended"],

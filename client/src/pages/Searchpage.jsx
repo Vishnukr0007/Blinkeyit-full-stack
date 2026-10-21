@@ -69,9 +69,17 @@ const Searchpage = () => {
   return (
     <section className="bg-white min-h-[90vh]">
       <div className="container mx-auto p-4">
-        <p className="font-semibold mb-4">
-          Search Results: {data.length}
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <p className="font-semibold text-gray-800 text-sm md:text-base">
+            {searchText ? (
+              <>
+                Search Results for <span className="text-green-700 font-bold">"{searchText}"</span> ({data.length})
+              </>
+            ) : (
+              `Trending Products (${data.length})`
+            )}
+          </p>
+        </div>
 
         {/* NO DATA STATE */}
         {!loading && data.length ===0 && (

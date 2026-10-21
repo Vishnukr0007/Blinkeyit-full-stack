@@ -48,12 +48,7 @@ const Header = () => {
   };
 
   const handleCartClick = () => {
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
-    setUserCartMenu(true); // both mobile & desktop
+    setUserCartMenu(true);
   };
 
   return (
@@ -124,15 +119,13 @@ const Header = () => {
             {/* CART BUTTON */}
             <button
               onClick={handleCartClick}
-              disabled={!isLoggedIn}
-              className={`flex items-center gap-3 px-4 py-4 rounded-md transition h-[52px] group
-                ${
-                  isLoggedIn
-                    ? "bg-green-700 text-white hover:bg-green-800 cursor-pointer"
-                    : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                }`}
+              className={`flex items-center gap-3 px-4 py-4 rounded-xl transition-all h-[52px] group cursor-pointer ${
+                totalQty > 0
+                  ? "bg-green-700 text-white hover:bg-green-800 shadow-sm active:scale-98"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+              }`}
             >
-              <BsCart3 size={20} className="animate-bounce-icon" />
+              <BsCart3 size={20} className={totalQty > 0 ? "animate-bounce-icon" : ""} />
 
               <div className="text-left text-sm leading-tight">
                 {totalQty > 0 ? (

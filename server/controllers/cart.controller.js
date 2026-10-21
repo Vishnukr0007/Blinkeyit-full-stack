@@ -8,8 +8,8 @@ export const addToCartItemController =async(req,res)=>{
         const {productId}=req.body;
 
         if(!productId){
-            return res.status(402).json({
-                message:"provide ProductId",
+            return res.status(400).json({
+                message:"Please provide a valid product ID",
                 error:true,
                 success:false
             })

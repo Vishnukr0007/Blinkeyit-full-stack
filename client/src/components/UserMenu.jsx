@@ -22,8 +22,9 @@ const UserMenu = ({closeMenu}) => {
             })
             if(response.data.success){
             dispatch(logout())
-            localStorage.clear()
-            toast.success(response.data.message)
+            localStorage.removeItem("accesstoken")
+            localStorage.removeItem("refreshtoken")
+            toast.success(response.data.message || "Logged out successfully")
             navigate("/")
 
             if(typeof closeMenu === 'function'){

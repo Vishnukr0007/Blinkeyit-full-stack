@@ -5,6 +5,8 @@ import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import AxiosToastError from "../utils/AxiosToastError";
 import { Link, useNavigate } from "react-router-dom";
+import ButtonLoader from "../components/ButtonLoader";
+
 const Register = () => {
   const [data, setData] = useState({
     name: "",
@@ -12,11 +14,15 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
-  const ValidateValue=Object.values(data).every(el =>el)
+
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate=useNavigate()
-  const handleChange =  (e) => {
+  const navigate = useNavigate();
+
+  const isFormValid = Object.values(data).every((val) => Boolean(val.trim()));
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({
       ...prev,
@@ -24,136 +30,173 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit= async(e)=>{
-     e.preventDefault()
-     if(data.password!==data.confirmPassword){
-      toast.error(
-        "password and confirm password mismatch"
-      )
-      return 
-     }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-     try {
-      const response=await Axios({
+    if (data.password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (data.password !== data.confirmPassword) {
+      toast.error("Passwords do not match. Please verify.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await Axios({
         ...SummaryApi.register,
-        data:data
-  })
-  if(response.data.error){
-    toast.error(response.data.message)
-  }
-  if(response.data.success){
-    toast.success(response.data.message)
-    setData({
-      name:"",
-      email:"",
-      password:"",
-      confirmPassword:""
-    })
-    navigate('/login')
-  }
+        data: data,
+      });
 
-  console.log('response',response)
-      
-     } catch (error) {
-       AxiosToastError(error)
-     }
-
-  }
-
-  
+      if (response.data.error) {
+        toast.error(response.data.message || "Registration failed");
+      } else if (response.data.success) {
+        toast.success(response.data.message || "Account created successfully! Please log in.");
+        setData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <section className="w-full container mx-auto px-4 flex justify-center items-center  ">
-      <div className="bg-white my-4 w-full max-w-md shadow-lg rounded-2xl p-6">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
-          Welcome to Blinkeyit
-        </h2>
+    <section className="w-full min-h-[80vh] container mx-auto px-4 flex justify-center items-center py-8">
+      <div className="bg-white w-full max-w-md shadow-md hover:shadow-lg border border-gray-100 rounded-3xl p-8 transition-shadow">
+        <div className="text-center mb-6">
+          <span className="text-2xl font-black text-green-700 tracking-tight">blinkey<span className="text-amber-500">it</span></span>
+          <h2 className="text-xl font-bold text-gray-900 mt-2">
+            Create Your Account
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            Get groceries delivered to your door in 10 minutes
+          </p>
+        </div>
 
         <form className="grid gap-4" onSubmit={handleSubmit}>
-          <div className="grid">
-            <label className="text-gray-700 font-medium" htmlFor="name">
-              Name
+          {/* Full Name */}
+          <div className="grid gap-1">
+            <label className="text-xs font-semibold text-gray-700" htmlFor="name">
+              Full Name
             </label>
             <input
               type="text"
-              placeholder="Enter your name"
+              placeholder="e.g. Rahul Sharma"
               id="name"
-              className="border rounded-lg p-2 focus:outline-none focus-within:border-yellow-500"
               name="name"
+              autoComplete="name"
+              className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 transition"
               value={data.name}
               onChange={handleChange}
+              required
             />
           </div>
 
-          <div className="grid">
-            <label className="text-gray-700 font-medium" htmlFor="email">
-              Email
+          {/* Email */}
+          <div className="grid gap-1">
+            <label className="text-xs font-semibold text-gray-700" htmlFor="email">
+              Email Address
             </label>
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder="e.g. rahul@example.com"
               id="email"
               name="email"
-              className="border rounded-lg p-2 focus:outline-none focus-within:border-yellow-500"
+              autoComplete="email"
+              className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100 transition"
               value={data.email}
               onChange={handleChange}
+              required
             />
           </div>
 
-          {/* Password Field */}
-          <div className="grid">
-            <label className="text-gray-700 font-medium" htmlFor="password">
-              Password
+          {/* Password */}
+          <div className="grid gap-1">
+            <label className="text-xs font-semibold text-gray-700" htmlFor="password">
+              Password (min. 6 characters)
             </label>
-            <div className="flex items-center border rounded-lg p-2 focus-within:border-yellow-500 outline-none">
+            <div className="flex items-center border border-gray-200 rounded-xl px-3.5 py-2.5 focus-within:border-green-600 focus-within:ring-2 focus-within:ring-green-100 transition">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                placeholder="Create a password"
                 id="password"
                 name="password"
-                className="w-full focus:outline-none"
+                autoComplete="new-password"
+                className="w-full focus:outline-none text-sm bg-transparent"
                 value={data.password}
                 onChange={handleChange}
+                required
               />
-              <div
+              <button
+                type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="cursor-pointer text-gray-600 ml-2"
+                className="cursor-pointer text-gray-400 hover:text-gray-600 ml-2"
+                title={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
-              </div>
+              </button>
             </div>
           </div>
 
-          {/* Confirm Password Field */}
-          <div className="grid">
-            <label className="text-gray-700 font-medium" htmlFor="confirmPassword">
+          {/* Confirm Password */}
+          <div className="grid gap-1">
+            <label className="text-xs font-semibold text-gray-700" htmlFor="confirmPassword">
               Confirm Password
             </label>
-            <div className="flex items-center border rounded-lg p-2 focus-within:border-yellow-500">
+            <div className="flex items-center border border-gray-200 rounded-xl px-3.5 py-2.5 focus-within:border-green-600 focus-within:ring-2 focus-within:ring-green-100 transition">
               <input
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm your password"
+                placeholder="Re-enter your password"
                 id="confirmPassword"
                 name="confirmPassword"
-                className="w-full focus:outline-none"
+                autoComplete="new-password"
+                className="w-full focus:outline-none text-sm bg-transparent"
                 value={data.confirmPassword}
                 onChange={handleChange}
+                required
               />
-              <div
+              <button
+                type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="cursor-pointer text-gray-600 ml-2"
+                className="cursor-pointer text-gray-400 hover:text-gray-600 ml-2"
+                title={showConfirmPassword ? "Hide password" : "Show password"}
               >
                 {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
-              </div>
+              </button>
             </div>
           </div>
 
-          <button disabled={!ValidateValue} className={`${ValidateValue ? "bg-green-800 hover:bg-green-700":"bg-gray-400"} text-white py-2 rounded-lg  transition-all cursor-pointer`}>
-            Register
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!isFormValid || loading}
+            className={`w-full py-3 rounded-xl font-bold text-sm transition-all duration-200 shadow-sm flex items-center justify-center mt-2 ${
+              isFormValid && !loading
+                ? "bg-green-700 hover:bg-green-800 text-white cursor-pointer active:scale-98"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            {loading ? <ButtonLoader /> : "Create Account"}
           </button>
         </form>
-        <p>Already have account?<Link to={"/login"} className="font-semibold text-green-800 cursor-pointer">Login</Link> 
 
+        <p className="text-center text-xs text-gray-600 mt-6">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-bold text-green-700 hover:text-green-800 hover:underline cursor-pointer"
+          >
+            Log In
+          </Link>
         </p>
       </div>
     </section>

@@ -1,20 +1,34 @@
-import AxiosToastError from "../utils/AxiosToastError.js";
 import { useEffect, useState } from "react";
-import Axios from "../utils/Axios.js";
-import SummaryApi from "../common/SummaryApi.js";
-import toast from "react-hot-toast";
-import { useGlobalContext } from "../provider/GlobalProvider.jsx";
 import ButtonLoader from "./ButtonLoader.jsx";
-import { useSelector } from "react-redux";
- import { FiMinus, FiPlus } from "react-icons/fi";
+import { FiMinus, FiPlus } from "react-icons/fi";
+import { useGlobalContext } from "../provider/GlobalProvider.jsx";
 
 const AddTocartButton = ({ data }) => {
   const [loading, setLoading] = useState(false);
-  const cartItem = useSelector((state) => state.cartItem.cart);
   const [isAvailableCart, setIsAvailable] = useState(false);
-  const [qty,setQty]=useState(0)
-  const [cartItemDetail,setCartItemDetail]=useState(null)
-  const { fetchCartItems, updateCartItemQty } = useGlobalContext();
+  const [qty, setQty] = useState(0);
+  const [cartItemDetail, setCartItemDetail] = useState(null);
+
+  const { cartItem = [], updateCartItemQty, addItemToCart } = useGlobalContext();
+
+  // Find if this product is in the current active cart
+  useEffect(() => {
+    if (!data?._id) return;
+
+    const itemInCart = cartItem.find(
+      (item) => (item?.productId?._id || item?.productId) === data._id
+    );
+
+    if (itemInCart) {
+      setIsAvailable(true);
+      setCartItemDetail(itemInCart);
+      setQty(Number(itemInCart.quantity) || 1);
+    } else {
+      setIsAvailable(false);
+      setCartItemDetail(null);
+      setQty(0);
+    }
+  }, [cartItem, data?._id]);
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
@@ -22,109 +36,74 @@ const AddTocartButton = ({ data }) => {
 
     try {
       setLoading(true);
-      const response = await Axios({
-        ...SummaryApi.addToCart,
-        data: {
-          productId: data?._id,
-        },
-      });
-
-      const { data: responseData } = response;
-
-      if (responseData.success) {
-        toast.success(responseData.message);
-        if (fetchCartItems) {
-          fetchCartItems();
-        }
-      }
-    } catch (error) {
-      AxiosToastError(error);
+      await addItemToCart(data);
     } finally {
       setLoading(false);
     }
   };
- useEffect(() => {
-  if (!data?._id) return;
-
-  const product = cartItem.find(
-    (item) => item?.productId?._id === data?._id
-  );
-
-  if (product) {
-    setIsAvailable(true);
-    setCartItemDetail(product);
-    setQty(Number(product.quantity) || 1);
-  } else {
-    setIsAvailable(false);
-    setCartItemDetail(null);
-    setQty(1);
-  }
-}, [cartItem, data?._id]);
-
 
   const increaseQty = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-  if (!cartItemDetail?._id) return;
+    const targetId = cartItemDetail?._id || `guest_${data?._id}`;
+    const newQty = qty + 1;
+    setQty(newQty); // optimistic UI
+    updateCartItemQty(targetId, newQty);
+  };
 
-  const newQty = qty + 1;
+  const decreaseQty = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  setQty(newQty); // optimistic UI
-  updateCartItemQty(cartItemDetail._id, newQty);
-};
+    const targetId = cartItemDetail?._id || `guest_${data?._id}`;
+    if (qty <= 1) {
+      setQty(0);
+      setIsAvailable(false);
+      updateCartItemQty(targetId, 0);
+      return;
+    }
 
-const decreaseQty = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  if (!cartItemDetail?._id) return;
-
-  if (qty <= 1) {
-    // OPTIONAL: remove item from cart
-    updateCartItemQty(cartItemDetail?._id, 0);
-    return;
-  }
-
-  const newQty = qty - 1;
-
-  setQty(newQty); // optimistic UI
-  updateCartItemQty(cartItemDetail?._id, newQty);
-};
-
+    const newQty = qty - 1;
+    setQty(newQty); // optimistic UI
+    updateCartItemQty(targetId, newQty);
+  };
 
   return (
     <div className="w-fit">
-      {isAvailableCart ? (
-        <div  className=" flex bg-green-700 hover:bg-green-600 rounded-full items-center justify-between p-1 px-2 gap-3">
-          <button onClick={decreaseQty}className=" text-white cursor-pointer"><FiMinus size={13}/></button>
-          <p className="text-white text-sm font-semibold">{qty}</p>
-          <button onClick={increaseQty}className="text-white cursor-pointer"><FiPlus size={13}/></button>
+      {isAvailableCart && qty > 0 ? (
+        <div className="flex bg-green-700 hover:bg-green-600 rounded-full items-center justify-between p-1 px-2.5 gap-3 shadow-xs transition-all active:scale-95">
+          <button
+            onClick={decreaseQty}
+            title="Decrease quantity"
+            className="text-white hover:text-green-100 transition cursor-pointer p-0.5"
+          >
+            <FiMinus size={13} />
+          </button>
+          <span className="text-white text-xs font-bold min-w-[14px] text-center select-none">
+            {qty}
+          </span>
+          <button
+            onClick={increaseQty}
+            title="Increase quantity"
+            className="text-white hover:text-green-100 transition cursor-pointer p-0.5"
+          >
+            <FiPlus size={13} />
+          </button>
         </div>
       ) : (
         <div className="flex justify-end">
-          {/* ADD BUTTON */}
           <button
-            className="
-        px-6 py-1.5
-        text-[11px] md:text-xs
-        font-bold
-        text-green-600
-        border border-green-600
-        rounded-full
-        hover:bg-green-50
-        active:scale-95
-        transition
-        cursor-pointer
-        bg-white
-      "
+            className="px-5 py-1.5 text-[11px] md:text-xs font-bold text-green-700 bg-green-50 border border-green-600 rounded-full hover:bg-green-700 hover:text-white active:scale-95 transition-all duration-200 cursor-pointer shadow-2xs"
             onClick={handleAddToCart}
+            disabled={loading}
           >
-            {loading ? <ButtonLoader /> : "ADD" } 
+            {loading ? <ButtonLoader /> : "ADD"}
           </button>
         </div>
       )}
     </div>
   );
 };
+
 export default AddTocartButton;

@@ -50,7 +50,7 @@ const ProductListPage = () => {
         if (responseData.page == 1 || !subcategoryId) {
           setData(responseData.data || []);
         } else {
-          setData([...data, ...(responseData.data || [])]);
+          setData((prev) => [...prev, ...(responseData.data || [])]);
         }
 
         setTotalPage(responseData.totalPage || 1);
@@ -63,8 +63,10 @@ const ProductListPage = () => {
   };
 
   useEffect(() => {
+    setData([]);
+    setPage(1);
     fetchProductData();
-  }, [params]);
+  }, [params.category, params.subCategory]);
 
   useEffect(() => {
     const sub = AllSubCategory.filter((s) => {

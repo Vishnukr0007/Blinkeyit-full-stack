@@ -68,7 +68,6 @@ const ProductDisplaypage = () => {
       behavior: "smooth",
     });
   };
-   console.log(data)
   return (
     <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -117,7 +116,7 @@ const ProductDisplaypage = () => {
                 className="overflow-x-auto lg:overflow-x-hidden scrollbar-hide scroll-smooth"
               >
                 <div className="flex gap-3">
-                  {data.image.map((img, index) => (
+                  {(Array.isArray(data.image) ? data.image : []).map((img, index) => (
                     <img
                       key={index}
                       src={img}

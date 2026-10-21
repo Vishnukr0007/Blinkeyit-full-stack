@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
@@ -9,58 +9,148 @@ import { priceWithDiscount } from "../utils/priceWithDiscount";
 import { handleAddAddress } from "../store/addressSlice";
 import { setOrder } from "../store/orderSlice";
 
+const GUEST_CART_KEY = "blinkeyit_guest_cart";
+
 export const GlobalContext = createContext(null);
 export const useGlobalContext = () => useContext(GlobalContext);
 
 const GlobalProvider = ({ children }) => {
   const dispatch = useDispatch();
 
-  const [totalQty, setTotalQty] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [originalTotal, setOriginalTotal] = useState(0);
-  const [totalSavings, setTotalSavings] = useState(0);
-
-  const cartItem = useSelector((state) => state?.cartItem?.cart || []);
+  const reduxCart = useSelector((state) => state?.cartItem?.cart || []);
   const user = useSelector((state) => state?.user);
+  const isLoggedIn = Boolean(user?._id);
 
-  // ================= FETCH CART =================
-  const fetchCartItems = async () => {
+  // Local state for guest items
+  const [guestCart, setGuestCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem(GUEST_CART_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Effective cart
+  const cartItem = useMemo(() => {
+    return isLoggedIn ? reduxCart : guestCart;
+  }, [isLoggedIn, reduxCart, guestCart]);
+
+  // Sync guest cart to localStorage
+  useEffect(() => {
+    if (!isLoggedIn) {
+      try {
+        localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestCart));
+      } catch (err) {
+        console.warn("Could not save guest cart", err);
+      }
+    }
+  }, [guestCart, isLoggedIn]);
+
+  // ================= FETCH CART (LOGGED IN) =================
+  const fetchCartItems = useCallback(async () => {
+    if (!isLoggedIn) return;
     try {
       const response = await Axios({
         ...SummaryApi.getCartItems,
       });
 
       if (response?.data?.success) {
-        dispatch(handleAddItemCart(response.data.data));
+        dispatch(handleAddItemCart(response.data.data || []));
       }
     } catch (error) {
-      console.error("Fetch cart error:", error);
+      console.warn("Fetch cart error:", error?.message);
     }
-  };
+  }, [isLoggedIn, dispatch]);
 
-  // ================= UPDATE QTY =================
-  const updateCartItemQty = async (id, qty) => {
-    try {
-      const response = await Axios({
-        ...SummaryApi.updateCartItemQty,
-        data: { _id: id, qty },
-      });
+  // ================= ADD TO CART (GUEST + AUTH) =================
+  const addItemToCart = useCallback(
+    async (product) => {
+      if (!product?._id) return;
 
-      if (response?.data?.success) {
-        toast.success(response.data.message);
-        fetchCartItems();
+      if (!isLoggedIn) {
+        // Guest mode: save to guestCart
+        setGuestCart((prev) => {
+          const idx = prev.findIndex(
+            (item) => item?.productId?._id === product._id
+          );
+          if (idx > -1) {
+            const updated = [...prev];
+            updated[idx] = {
+              ...updated[idx],
+              quantity: (updated[idx].quantity || 1) + 1,
+            };
+            return updated;
+          }
+          return [
+            ...prev,
+            {
+              _id: `guest_${product._id}`,
+              productId: product,
+              quantity: 1,
+            },
+          ];
+        });
+        toast.success(`Added ${product.name} to cart`);
+        return;
       }
-    } catch (error) {
-      AxiosToastError(error);
-    }
-  };
+
+      // Logged-in mode
+      try {
+        const response = await Axios({
+          ...SummaryApi.addToCart,
+          data: { productId: product._id },
+        });
+
+        if (response?.data?.success) {
+          toast.success(response.data.message || "Added to cart");
+          fetchCartItems();
+        }
+      } catch (error) {
+        AxiosToastError(error);
+      }
+    },
+    [isLoggedIn, fetchCartItems]
+  );
+
+  // ================= UPDATE QTY (GUEST + AUTH) =================
+  const updateCartItemQty = useCallback(
+    async (id, qty) => {
+      if (!id) return;
+
+      if (!isLoggedIn) {
+        setGuestCart((prev) => {
+          if (qty <= 0) {
+            return prev.filter((item) => item._id !== id);
+          }
+          return prev.map((item) =>
+            item._id === id ? { ...item, quantity: qty } : item
+          );
+        });
+        return;
+      }
+
+      try {
+        const response = await Axios({
+          ...SummaryApi.updateCartItemQty,
+          data: { _id: id, qty },
+        });
+
+        if (response?.data?.success) {
+          fetchCartItems();
+        }
+      } catch (error) {
+        AxiosToastError(error);
+      }
+    },
+    [isLoggedIn, fetchCartItems]
+  );
 
   // ================= CALCULATE TOTALS =================
-  useEffect(() => {
-    const { qty, discountedTotal, originalTotal } = cartItem.reduce(
+  const { totalQty, totalPrice, originalTotal, totalSavings } = useMemo(() => {
+    return (cartItem || []).reduce(
       (acc, curr) => {
         const quantity = Number(curr?.quantity) || 0;
-
         const basePrice =
           Number(curr?.price) ||
           Number(curr?.product?.price) ||
@@ -75,84 +165,107 @@ const GlobalProvider = ({ children }) => {
 
         const finalPrice = priceWithDiscount(basePrice, discount);
 
-        acc.qty += quantity;
+        acc.totalQty += quantity;
         acc.originalTotal += quantity * basePrice;
-        acc.discountedTotal += quantity * finalPrice;
+        acc.totalPrice += quantity * finalPrice;
+        acc.totalSavings += quantity * (basePrice - finalPrice);
 
         return acc;
       },
-      { qty: 0, originalTotal: 0, discountedTotal: 0 }
+      { totalQty: 0, totalPrice: 0, originalTotal: 0, totalSavings: 0 }
     );
-
-    setTotalQty(qty);
-    setTotalPrice(discountedTotal);
-    setOriginalTotal(originalTotal);
-    setTotalSavings(originalTotal - discountedTotal);
   }, [cartItem]);
 
-  // ================= fetch Address =================
-
-  const fetchAddress=async ()=>{
+  // ================= FETCH ADDRESS =================
+  const fetchAddress = useCallback(async () => {
+    if (!isLoggedIn) return;
     try {
-      const response =await Axios({
-        ...SummaryApi.getAddress
-      })
+      const response = await Axios({
+        ...SummaryApi.getAddress,
+      });
 
-      const {data:  responseData}=response;
-
-      if(responseData.success){
-        dispatch(handleAddAddress(responseData.data))
-        
+      const { data: responseData } = response;
+      if (responseData.success) {
+        dispatch(handleAddAddress(responseData.data));
       }
-      
     } catch (error) {
-      AxiosToastError(error)
+      AxiosToastError(error);
     }
-  }
+  }, [isLoggedIn, dispatch]);
 
-    const fetchOrderDetails= async()=>{
-       try {
-          const response= await Axios({
-          ...SummaryApi.getOrderItems,
-           
-         })
+  // ================= FETCH ORDER DETAILS =================
+  const fetchOrderDetails = useCallback(async () => {
+    if (!isLoggedIn) return;
+    try {
+      const response = await Axios({
+        ...SummaryApi.getOrderItems,
+      });
 
-      const {data : responseData} =response;
-      if(responseData.success){
-        dispatch(setOrder(responseData.data))
-      }  
-        
-       } catch (error) {
-          AxiosToastError(error)
-       }
+      const { data: responseData } = response;
+      if (responseData.success) {
+        dispatch(setOrder(responseData.data));
+      }
+    } catch (error) {
+      AxiosToastError(error);
     }
+  }, [isLoggedIn, dispatch]);
 
-  // ================= USER CHANGE =================
+  // ================= MERGE GUEST CART ON LOGIN =================
+  const mergeGuestCart = useCallback(async () => {
+    try {
+      const guestItems = localStorage.getItem(GUEST_CART_KEY);
+      if (!guestItems) return;
+      const parsed = JSON.parse(guestItems);
+
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        for (const item of parsed) {
+          const pId = item?.productId?._id;
+          if (pId) {
+            try {
+              await Axios({
+                ...SummaryApi.addToCart,
+                data: { productId: pId },
+              });
+            } catch {
+              // continue merging next item
+            }
+          }
+        }
+        localStorage.removeItem(GUEST_CART_KEY);
+        setGuestCart([]);
+        fetchCartItems();
+      }
+    } catch (err) {
+      console.warn("Guest cart merge error:", err);
+    }
+  }, [fetchCartItems]);
+
+  // ================= USER STATE CHANGE =================
   useEffect(() => {
     if (user?._id) {
-      fetchCartItems(); // login
+      fetchCartItems();
       fetchAddress();
       fetchOrderDetails();
+      mergeGuestCart();
     } else {
-      dispatch(handleAddItemCart([])); // logout
-      setTotalQty(0);
-      setTotalPrice(0);
-      setOriginalTotal(0);
-      setTotalSavings(0);
+      dispatch(handleAddItemCart([]));
     }
-  }, [user,dispatch]);
+  }, [user?._id, fetchCartItems, fetchAddress, fetchOrderDetails, mergeGuestCart, dispatch]);
 
   return (
     <GlobalContext.Provider
       value={{
         fetchCartItems,
         updateCartItemQty,
+        addItemToCart,
         fetchAddress,
+        fetchOrderDetails,
         totalQty,
         totalPrice,
         cartItem,
         originalTotal,
         totalSavings,
+        isLoggedIn,
       }}
     >
       {children}
